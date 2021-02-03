@@ -17,4 +17,4 @@ Run the following R code in R to get interactive plots. Package 'shiny' and 'ggp
 library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "ROH")
 ```
-<img src="https://github.com/chenlab-uva/AncestryInference_KING/blob/main/output/RshinyExample.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/roh_example.png" width="854" height="480">
