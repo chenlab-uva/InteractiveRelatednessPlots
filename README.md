@@ -1,2 +1,2 @@
 # InteractivePlot_KING
-This repository is for the interactive plot from KING
+This repository is for the interactive plots from KING
