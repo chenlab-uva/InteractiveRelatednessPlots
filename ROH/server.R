@@ -14,7 +14,7 @@ server <- function(input, output, session) {
   segments_df <- reactive({
     req(input$filerohseg)
     filerohseg <- input$filerohseg
-    rohseg <- read.table(filerohseg$datapath, header = TRUE)
+    rohseg <- read.table(filerohseg$datapath, header = TRUE, stringsAsFactors = FALSE)
     rohseg <- rohseg[, c("FID", "ID", "Chr", "StartMB", "StopMB")]
     return(rohseg)
   })
@@ -41,7 +41,8 @@ server <- function(input, output, session) {
     roh_info <- roh_info_df()
     target.data <- roh_info[roh_info$F_ROH >= input$F_ROH_range[1] & roh_info$F_ROH <= input$F_ROH_range[2] & 
                               roh_info$F_ROH_X >= input$F_ROH_X_range[1] & roh_info$F_ROH_X <= input$F_ROH_X_range[2],]
-    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab="F_ROH_X", main = paste0("F_ROH_X vs F_ROH in ", prefix))
+    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab="F_ROH_X", main = paste0("F_ROH_X vs F_ROH in ", prefix),
+         cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
   })
   
   output$click_info <- renderPrint({
@@ -58,17 +59,17 @@ server <- function(input, output, session) {
         k <- NULL
       } else {
         k <- segments[segments$ID==name, ]
-        print(k) 
-        
+        write.table(k, row.names = FALSE, quote = FALSE, sep = "\t")
       }
       output$plot2 <- renderPlot({
         validate(
           need(nrow(k) > 0, "Please select a related pair")
         )
-        theme_set(theme_bw(base_size = 18))
+        theme_set(theme_bw(base_size = 16))
         f_roh <- roh_info[roh_info$ID==name,"F_ROH"]
         fid <- k[1,1]
         id <- k[1,2]
+        prefix <- filename()
         g <- ggplot() +
           geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) +
           geom_rect(data = k, aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9), fill = "red") +
@@ -78,7 +79,7 @@ server <- function(input, output, session) {
           theme(legend.position = "none",
                 panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
                 panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title=element_text(size = 18))
+                axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title=element_text(size = 15))
         print(g)
       
       })
