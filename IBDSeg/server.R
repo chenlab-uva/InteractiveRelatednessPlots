@@ -111,4 +111,9 @@ server <- function(input, output, session) {
         print(g)
       })
     })
+  
+  session$onSessionEnded(function() {
+    stopApp()
+  })
+  
   }
