@@ -30,12 +30,13 @@ Run KING to get the required three files. They are *.seg, *.segments.gz and *all
 king -b example.bed --ibdseg --prefix example
 ```
 
-Run the following R code in R to get interactive plots. Package 'shiny' and 'ggplot2' are required. Related R files are saved at ROH folder. <br/> 
+Run the following R code in R to get interactive plots. Package 'shiny' and 'ggplot2' are required. Related R files are saved at IBDSeg folder. <br/> 
 
 ```{bash}
 library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "IBDSeg")
 ```
 Example output
+
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/IBDSeg.png" width="854" height="480">
 
