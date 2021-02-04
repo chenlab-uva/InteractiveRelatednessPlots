@@ -3,7 +3,7 @@ This repository is for the interactive plots from KING
 
 
 
-## Interactive plots for ROH.
+## Interactive plots for ROH
 
 Run KING to get the required three files. They are *.roh, *.rohseg.gz and *allsegs.txt
 
@@ -16,6 +16,25 @@ Run the following R code in R to get interactive plots. Package 'shiny' and 'ggp
 ```{bash}
 library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "ROH")
+```
+Example output
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/roh_example.png" width="854" height="480">
+
+
+## Interactive plots for IBD Segments
+
+
+Run KING to get the required three files. They are *.seg, *.segments.gz and *allsegs.txt
+
+```{bash}
+king -b example.bed --ibdseg --prefix example
+```
+
+Run the following R code in R to get interactive plots. Package 'shiny' and 'ggplot2' are required. Related R files are saved at ROH folder. <br/> 
+
+```{bash}
+library(shiny)
+runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "IBDSeg")
 ```
 Example output
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/roh_example.png" width="854" height="480">
