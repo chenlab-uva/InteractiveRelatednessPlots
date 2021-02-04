@@ -40,6 +40,7 @@ server <- function(input, output, session) {
  
   output$plot1 <- renderPlot({
     req(infer_df())
+    prefix <- filename()
     individuals_all <- infer_df()
     individuals_all <- individuals_all[individuals_all$IBD1Seg >= input$IBD1Seg[1] & individuals_all$IBD1Seg <= input$IBD1Seg[2] & 
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
@@ -115,5 +116,4 @@ server <- function(input, output, session) {
   session$onSessionEnded(function() {
     stopApp()
   })
-  
-  }
+}
