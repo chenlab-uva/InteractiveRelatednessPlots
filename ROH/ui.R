@@ -1,5 +1,5 @@
 ui <- fluidPage(
-  titlePanel(("Interface for Interactive Plot of ROH")),
+  titlePanel(("Interface for Interactive Plot of Run-Of-Homozygosity")),
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
                              fileInput("fileroh", "Choose a roh file"),
