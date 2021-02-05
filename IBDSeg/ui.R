@@ -1,5 +1,5 @@
 ui <- fluidPage(
-  titlePanel(("Interface for Interactive Plot of IBD Segments")),
+  titlePanel(("Interface for Interactive Plot of Identical-By-Descent Segments")),
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
                              fileInput("fileinfer", "Choose a *.seg file"),
