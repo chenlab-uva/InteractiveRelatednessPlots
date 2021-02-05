@@ -4,7 +4,7 @@ server <- function(input, output, session) {
     req(input$fileroh)
     fileroh <- input$fileroh
     roh <- read.table(fileroh$datapath, header = TRUE, stringsAsFactors = FALSE)
-    rohinfo <- roh[roh$F_ROH > 2^-4.5, c("FID","ID","F_ROH_X","F_ROH")]
+    rohinfo <- roh[roh$F_ROH > 2^-5.5, c("FID","ID","F_ROH_X","F_ROH")]
     updateSliderInput(session, "F_ROH_range",label = "F_ROH_range",
                       min = min(rohinfo$F_ROH), max = max(rohinfo$F_ROH), 
                       value = c(min(rohinfo$F_ROH),max(rohinfo$F_ROH)))
