@@ -5,6 +5,7 @@ server <- function(input, output, session) {
     fileroh <- input$fileroh
     roh <- read.table(fileroh$datapath, header = TRUE, stringsAsFactors = FALSE)
     rohinfo <- roh[roh$F_ROH > 2^-6.5, c("FID","ID","F_ROH_X","F_ROH")]
+    updateSelectizeInput(session, "ID", label = "ID", choices = c(Choose='', rohinfo$ID), selected = NULL)
     updateSliderInput(session, "F_ROH_range",label = "F_ROH_range",
                       min = min(rohinfo$F_ROH), max = max(rohinfo$F_ROH), 
                       value = c(min(rohinfo$F_ROH),max(rohinfo$F_ROH)))
@@ -81,11 +82,47 @@ server <- function(input, output, session) {
                 panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                 axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title=element_text(size = 15))
         print(g)
-      
+        
       })
     }
   })
   
+  output$plot3 <- renderPlot({
+    req(input$ID)
+    req(roh_info_df())
+    req(segments_df())
+    req(all_seg_df())
+    roh_info <- roh_info_df()
+    segments <- segments_df()
+    all_seg <- all_seg_df()
+    theme_set(theme_bw(base_size = 16))
+    f_roh <- roh_info[roh_info$ID==input$ID,"F_ROH"]
+    fid <- unique(roh_info[roh_info$ID==input$ID,"FID"])
+    id <- unique(input$ID)
+    prefix <- filename()
+    k <- segments[segments$ID==input$ID, ]
+    g <- ggplot() +
+      geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) +
+      geom_rect(data = k, aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9), fill = "red") +
+      geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) +
+      facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
+      labs(x = "Position (Mb)", y = "", title = bquote(paste('Run of Homozygosity for ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
+      theme(legend.position = "none",
+            panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title=element_text(size = 15))
+    print(g)
+    
+  })
+  
+  output$dt1 <- renderDataTable({
+    req(input$ID)
+    if (input$ID=="Choice") return()
+    req(segments_df())
+    segments <- segments_df()
+    segments[segments$ID==input$ID, ]
+  })
+
   session$onSessionEnded(function() {
     stopApp()
   })
