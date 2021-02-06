@@ -6,7 +6,7 @@ server <- function(input, output, session) {
     roh <- read.table(fileroh$datapath, header = TRUE, stringsAsFactors = FALSE)
     rohinfo <- roh[roh$F_ROH > 2^-6.5, c("FID","ID","F_ROH_X","F_ROH")]
     updateSelectizeInput(session, "ID", label = "ID", choices = c(Choose='', rohinfo$ID), selected = NULL)
-    updateSliderInput(session, "F_ROH_range",label = "F_ROH_range",
+    updateSliderInput(session, "F_ROH_Range",label = "F_ROH_Range",
                       min = min(rohinfo$F_ROH), max = max(rohinfo$F_ROH), 
                       value = c(min(rohinfo$F_ROH),max(rohinfo$F_ROH)))
     return(rohinfo)
