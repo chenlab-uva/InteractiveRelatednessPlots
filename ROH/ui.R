@@ -5,8 +5,8 @@ ui <- fluidPage(
                              fileInput("fileroh", "Choose a roh file"),
                              fileInput("filerohseg", "Choose a rohseg.gz file"),
                              fileInput("fileallseg", "Choose a text file with all segements information", accept = "text"),
-                             sliderInput("F_ROH_range", "F_ROH_Range:", min = 0, max = 1,value = c(0,1)),
-                             sliderInput("F_ROH_X_range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
+                             sliderInput("F_ROH_Range", "F_ROH_Range:", min = 0, max = 1,value = c(0,1)),
+                             sliderInput("F_ROH_X_Range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
                              selectizeInput("ID", "ID",choices =c(Choose='')),
                              width = 3
                 ),
