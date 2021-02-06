@@ -19,7 +19,8 @@ runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "ROH")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/roh_example.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/ROH2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/ROH1.png" width="854" height="480">
 
 
 ## Interactive plots for IBD Segments
