@@ -21,7 +21,7 @@ server <- function(input, output, session) {
     fileibdseg <- input$fileibdseg
     ibdseg <- read.table(fileibdseg$datapath, header = TRUE, stringsAsFactors = FALSE)
     ibdseg <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
-    colnames(ibdseg) <- c("ID1", "ID2", "IBDType", "chr", "start", "end")
+    #colnames(ibdseg) <- c("ID1", "ID2", "IBDType", "chr", "start", "StopMB")
     return(ibdseg)
   })
   
@@ -31,7 +31,6 @@ server <- function(input, output, session) {
     allseg <- read.table(fileallseg$datapath, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     allseg <- allseg[allseg$Chr <= 22, ]
-    colnames(allseg) <- c("chr", "start", "end")
     return(allseg)
   })
   
@@ -89,12 +88,12 @@ server <- function(input, output, session) {
     all_seg <- all_seg_df()
     point.index <- which.min((individuals_all$IBD1Seg-input$plot_click$x)^2+(individuals_all$IBD2Seg-input$plot_click$y)^2) 
     if (!(abs(individuals_all[point.index, "IBD1Seg"]-input$plot_click$x) <= 0.01 & abs(individuals_all[point.index,"IBD2Seg"]-input$plot_click$y) <= 0.01)) {
-      target.data <- NULL}
-    else{
+      target.data <- NULL } else {
       segments$IBDType <- factor(segments$IBDType, levels = c("IBD0", "IBD1", "IBD2"))
       target.data <- segments[segments$ID1==individuals_all[point.index,"ID1"] & segments$ID2==individuals_all[point.index,"ID2"], ]
+      print(target.data, sep="\t", quote=FALSE, row.names=FALSE)
     }
-    print(individuals_all[point.index, ], sep="\t", quote=FALSE, row.names=FALSE)
+    
     output$plot2 <- renderPlot({
       validate(
         need(nrow(target.data) > 0, "Please select a related pair")
@@ -103,11 +102,11 @@ server <- function(input, output, session) {
       Prop.IBD2 <- individuals_all[point.index, "IBD2Seg"]
       theme_set(theme_bw(base_size = 16))
       g <- ggplot() +
-        geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
-        geom_rect(data = target.data , aes(xmin = start, xmax = end, ymin = 0, ymax = 0.9, fill = IBDType)) + 
-        geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
+        geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
+        geom_rect(data = target.data , aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9, fill = IBDType)) + 
+        geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
         scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
-        facet_grid(chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
+        facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
         labs(x = "Position (MB)", y = "", title=paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
                                                       " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")"))+
         theme(
@@ -139,12 +138,12 @@ server <- function(input, output, session) {
     
     theme_set(theme_bw(base_size = 16))
     g <- ggplot() +
-      geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
-      geom_rect(data = target.data , aes(xmin = start, xmax = end, ymin = 0, ymax = 0.9, fill = IBDType)) + 
-      geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
+      geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
+      geom_rect(data = target.data , aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9, fill = IBDType)) + 
+      geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
-      facet_grid(chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
-      labs(x = "Position (MB)", y = "", title= paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
+      facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
+      labs(x = "Position (Mb)", y = "", title= paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
                                                      " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")")) + 
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
