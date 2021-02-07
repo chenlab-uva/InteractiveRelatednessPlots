@@ -4,12 +4,15 @@ server <- function(input, output, session) {
     req(input$fileinfer)
     fileinfer <- input$fileinfer
     infer_all <- read.table(fileinfer$datapath, header = TRUE, stringsAsFactors = FALSE)
-    updateSliderInput(session, "IBD1Seg",label = "IBD1Seg",
+    IDpairs <- paste(infer_all$ID1, infer_all$ID2, sep="_")
+    updateSliderInput(session, "IBD1Seg",label = "IBD1Seg_Range",
                       min = min(infer_all$IBD1Seg), max = max(infer_all$IBD1Seg), 
                       value = c(min(infer_all$IBD1Seg),max(infer_all$IBD1Seg)))
-    updateSliderInput(session, "IBD2Seg",label = "IBD2Seg",
+    updateSliderInput(session, "IBD2Seg",label = "IBD2Seg_Range",
                       min = min(infer_all$IBD2Seg), max = max(infer_all$IBD2Seg), 
                       value = c(min(infer_all$IBD2Seg),max(infer_all$IBD2Seg)))
+    updateSelectizeInput(session, "Pairs_ID1_ID2", label = "ID1_ID2",
+                      choices = c(Choose='', IDpairs), selected = NULL)
     return(infer_all)
   })
   
@@ -27,6 +30,7 @@ server <- function(input, output, session) {
     fileallseg <- input$fileallseg
     allseg <- read.table(fileallseg$datapath, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
+    allseg <- allseg[allseg$Chr <= 22, ]
     colnames(allseg) <- c("chr", "start", "end")
     return(allseg)
   })
@@ -37,7 +41,7 @@ server <- function(input, output, session) {
     file_prefix <- gsub(".seg", " ", fileinfer$name)
     return(file_prefix)
   })
- 
+  
   output$plot1 <- renderPlot({
     req(infer_df())
     prefix <- filename()
@@ -83,35 +87,84 @@ server <- function(input, output, session) {
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
     segments <- segments_df()
     all_seg <- all_seg_df()
-    cat(paste0("IBD1Seg=",round(input$plot_click$x,4), "; IBD2Seg=", round(input$plot_click$y,4)))
     point.index <- which.min((individuals_all$IBD1Seg-input$plot_click$x)^2+(individuals_all$IBD2Seg-input$plot_click$y)^2) 
     if (!(abs(individuals_all[point.index, "IBD1Seg"]-input$plot_click$x) <= 0.01 & abs(individuals_all[point.index,"IBD2Seg"]-input$plot_click$y) <= 0.01)) {
       target.data <- NULL}
-      else{
-        segments$IBDType <- factor(segments$IBDType, levels = c("IBD0", "IBD1", "IBD2"))
-        target.data <- segments[segments$ID1==individuals_all[point.index,"ID1"] & segments$ID2==individuals_all[point.index,"ID2"], ]
-  }
-      output$plot2 <- renderPlot({
-        validate(
-          need(nrow(target.data) > 0, "Please select a related pair")
+    else{
+      segments$IBDType <- factor(segments$IBDType, levels = c("IBD0", "IBD1", "IBD2"))
+      target.data <- segments[segments$ID1==individuals_all[point.index,"ID1"] & segments$ID2==individuals_all[point.index,"ID2"], ]
+    }
+    print(individuals_all[point.index, ], sep="\t", quote=FALSE, row.names=FALSE)
+    output$plot2 <- renderPlot({
+      validate(
+        need(nrow(target.data) > 0, "Please select a related pair")
+      )
+      Prop.IBD1 <- individuals_all[point.index, "IBD1Seg"]
+      Prop.IBD2 <- individuals_all[point.index, "IBD2Seg"]
+      theme_set(theme_bw(base_size = 16))
+      g <- ggplot() +
+        geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
+        geom_rect(data = target.data , aes(xmin = start, xmax = end, ymin = 0, ymax = 0.9, fill = IBDType)) + 
+        geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
+        scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
+        facet_grid(chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
+        labs(x = "Position (MB)", y = "", title=paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
+                                                      " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")"))+
+        theme(
+          legend.position = "bottom", legend.key = element_rect(color = "black"),
+          panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+          axis.text.y = element_blank(), axis.ticks.y = element_blank()
         )
-        theme_set(theme_bw(base_size = 18))
-        g <- ggplot() +
-          geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
-          geom_rect(data = target.data , aes(xmin = start, xmax = end, ymin = 0, ymax = 0.9, fill = IBDType)) + 
-          geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
-          scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
-          facet_grid(chr ~ .) +
-          labs(x = "Position (MB)", y = "", title=paste("IBD Segments between", target.data$ID1, "and", target.data$ID2, sep = " "))+
-          theme(
-            legend.position = "bottom", legend.key = element_rect(color = "black"),
-            panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
-            panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-            axis.text.y = element_blank(), axis.ticks.y = element_blank()
-          )
-        print(g)
-      })
+      print(g)
     })
+  })
+  
+  output$plot3 <- renderPlot({
+    req(input$Pairs_ID1_ID2)
+    req(infer_df())
+    req(segments_df())
+    req(all_seg_df())
+    individuals_all <- infer_df()
+    segments <- segments_df()
+    all_seg <- all_seg_df()
+    
+    ID1_ID2 <- input$Pairs_ID1_ID2
+    ID1 <- unlist(strsplit(ID1_ID2,"_"))[1]
+    ID2 <- unlist(strsplit(ID1_ID2,"_"))[2]
+    target.data <- segments[segments$ID1==ID1 & segments$ID2==ID2, ]
+
+    Prop.IBD1 <- individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD1Seg"]
+    Prop.IBD2 <- individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD2Seg"]
+    
+    theme_set(theme_bw(base_size = 16))
+    g <- ggplot() +
+      geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
+      geom_rect(data = target.data , aes(xmin = start, xmax = end, ymin = 0, ymax = 0.9, fill = IBDType)) + 
+      geom_rect(data = all_seg, aes(xmin = start, xmax = end, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
+      scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
+      facet_grid(chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
+      labs(x = "Position (MB)", y = "", title= paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
+                                                     " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")")) + 
+      theme(
+        legend.position = "bottom", legend.key = element_rect(color = "black"),
+        panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        axis.text.y = element_blank(), axis.ticks.y = element_blank()
+      )
+    print(g)
+  })
+
+  output$dt1 <- renderDataTable({
+    req(input$Pairs_ID1_ID2)
+    if (input$Pairs_ID1_ID2=="Choice") return()
+    req(segments_df())
+    segments <- segments_df()
+    ID1_ID2 <- input$Pairs_ID1_ID2
+    ID1 <- unlist(strsplit(ID1_ID2,"_"))[1]
+    ID2 <- unlist(strsplit(ID1_ID2,"_"))[2]
+    segments[segments$ID1==ID1 & segments$ID2==ID2, ]
+  })
   
   session$onSessionEnded(function() {
     stopApp()
