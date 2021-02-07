@@ -7,21 +7,28 @@ ui <- fluidPage(
                              fileInput("fileallseg", "Choose a text file with all segments information", accept = "text"),
                              sliderInput("IBD1Seg", "IBD1Seg_Range:", min = 0, max = 1,value = c(0,1)),
                              sliderInput("IBD2Seg", "IBD2Seg_Range:",min = 0, max = 1,value = c(0,1)),
+                             selectizeInput("Pairs_ID1_ID2", "ID1_ID2", choices =c(Choose='')),
                              width = 2
                 ),
-                mainPanel(id="main",
-                          tabPanel("Plots", 
+                mainPanel(
+                  tabsetPanel(
+                          tabPanel("Main Plot", 
                                    fluidRow(
                                      splitLayout(style = "border: 1px solid silver:", 
                                                  plotOutput(outputId = "plot1", click = "plot_click", height = "600px"),
                                                  plotOutput(outputId = "plot2", height = "600px", width = "100%")
                                      )),
                                    fluidRow(
-                                     column(width = 5,
+                                     column(width = 8,
                                             verbatimTextOutput("click_info"),
                                             verbatimTextOutput("last_infor")        
                                      )
                                    )
+                          ),
+                          tabPanel("IBD Segments for the Selected Pair",
+                                   plotOutput("plot3",height = "600px", width = "80%"),
+                                   dataTableOutput(outputId = "dt1")
                           )
+                          
                 )))
-
+)
