@@ -27,10 +27,8 @@ ui <- fluidPage(
                              column(6,plotOutput('plot2'))
                     ),
                     fluidRow(
-                             column(8, plotOutput('plot3')))                    #splitLayout(cellWidths = c("50%", "50%"),
-                    #plotOutput(outputId = "plot1", width = "100%"),
-                    #plotOutput(outputId = "plot2",width = "100%"),
-                    #plotOutput(outputId = "plot3",width = "100%"))
+                             column(8, plotOutput('plot3', height="600px")))   
+                  
                   )
   )
 ))
