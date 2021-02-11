@@ -1,4 +1,4 @@
-library(igraph)
+library(kinship2)
 library(igraph)
 library(ggplot2)
 
