@@ -147,13 +147,12 @@ server <- function(input, output, session) {
     all_seg <- all_seg_df()
     target.data <- input_target()
     
-    chr.num <- ifelse (max(target.data$Chr)==23, 23, max(target.data$Chr))
-    all_seg <- all_seg[all_seg$Chr <= chr.num, ]
-    
-    
     validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
+    
+    chr.num <- ifelse (max(target.data$Chr)==23, 23, max(target.data$Chr))
+    all_seg <- all_seg[all_seg$Chr <= chr.num, ]
     
     ID1 <- unique(target.data$ID1)
     ID2 <- unique(target.data$ID2)
