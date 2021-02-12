@@ -41,15 +41,15 @@ server <- function(input, output, session) {
   
   
   input_target <- eventReactive(input$EnterIDs, {
-      req(input$fileinfer)
-      req(input$fileibdseg)
-      req(input$fileallseg)
-      fileibdseg <- input$fileibdseg
-      ibdseg <- read.table(fileibdseg$datapath, header = TRUE, stringsAsFactors = FALSE)
-      segments <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
-      select_segments <- segments[(segments$ID1==input$ID1 & segments$ID2==input$ID2) | (segments$ID1==input$ID2 & segments$ID2==input$ID1), ]
-      return(select_segments)
-    })
+    req(input$fileinfer)
+    req(input$fileibdseg)
+    req(input$fileallseg)
+    fileibdseg <- input$fileibdseg
+    ibdseg <- read.table(fileibdseg$datapath, header = TRUE, stringsAsFactors = FALSE)
+    segments <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
+    select_segments <- segments[(segments$ID1==input$ID1 & segments$ID2==input$ID2) | (segments$ID1==input$ID2 & segments$ID2==input$ID1), ]
+    return(select_segments)
+  })
   
   
   output$plot1 <- renderPlot({
@@ -59,8 +59,8 @@ server <- function(input, output, session) {
     individuals_all <- individuals_all[individuals_all$IBD1Seg >= input$IBD1Seg[1] & individuals_all$IBD1Seg <= input$IBD1Seg[2] & 
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
     validate(
-        need(nrow(individuals_all) > 0, "Please adjust the IBD1 Seg and IBD2 Seg")
-      )
+      need(nrow(individuals_all) > 0, "Please adjust the IBD1 Seg and IBD2 Seg")
+    )
     
     d0 <- individuals_all$IBD2Seg>0.7
     d1.PO <- (!d0) & individuals_all$IBD1Seg+individuals_all$IBD2Seg>0.96 | (individuals_all$IBD1Seg+individuals_all$IBD2Seg>0.9 & individuals_all$IBD2Seg<0.08)
@@ -149,7 +149,7 @@ server <- function(input, output, session) {
     individuals_all <- infer_df()
     all_seg <- all_seg_df()
     target.data <- input_target()
-
+    
     validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
