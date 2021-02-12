@@ -149,11 +149,7 @@ server <- function(input, output, session) {
     individuals_all <- infer_df()
     all_seg <- all_seg_df()
     target.data <- input_target()
-    
-   # chr.num <- ifelse (max(target.data$Chr)==23, 23, max(target.data$Chr))
-   # all_seg <- all_seg[all_seg$Chr <= chr.num, ]
-    
-    
+
     validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
@@ -189,6 +185,9 @@ server <- function(input, output, session) {
   output$dt1 <- renderDataTable({
     req(input_target())
     select_df <- input_target()
+    validate(
+      need(nrow(select_df) > 0, "Please select a related pair")
+    )
     select_df
   })
   
