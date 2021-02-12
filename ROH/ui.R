@@ -5,12 +5,24 @@ ui <- fluidPage(
                              fileInput("fileroh", "Choose a roh file"),
                              fileInput("filerohseg", "Choose a rohseg.gz file"),
                              fileInput("fileallseg", "Choose a text file with all segments information", accept = "text"),
-                             sliderInput("F_ROH_range", "F_ROH_Range:", min = 0, max = 1,value = c(0,1)),
-                             sliderInput("F_ROH_X_range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
-                             selectizeInput("ID", "ID",choices =c(Choose='')),
+                             sliderInput("F_ROH_Range", "F_ROH_Range:", min = 0, max = 1,value = c(0,1)),
+                             sliderInput("F_ROH_X_Range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
+                             fluidRow(
+                               column(5, textInput(inputId = "FID",
+                                                   label = "FID",
+                                                   value = " ",
+                                                   width = "100px")
+                               ),
+                               column(5, ofset = 3,
+                                      textInput(inputId = "ID",
+                                                label = "ID",
+                                                value = "",
+                                                width = "100px")
+                               )),
+                             actionButton(inputId = "EnterID", label = "Enter FID and ID"),
                              width = 3
                 ),
-                 mainPanel(
+                mainPanel(
                   tabsetPanel(
                     tabPanel("Main Plot", 
                              fluidRow(
@@ -28,6 +40,6 @@ ui <- fluidPage(
                     tabPanel("ROH for Selected Study Sample",
                              plotOutput("plot3",height = "600px", width = "80%"),
                              dataTableOutput(outputId = "dt1")
-                             )
-                                              ))
-))
+                    )
+                  ))
+  ))
