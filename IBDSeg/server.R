@@ -29,7 +29,6 @@ server <- function(input, output, session) {
     fileallseg <- input$fileallseg
     allseg <- read.table(fileallseg$datapath, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
-    # allseg <- allseg[allseg$Chr <= 22, ]
     return(allseg)
   })
   
@@ -59,6 +58,10 @@ server <- function(input, output, session) {
     individuals_all <- infer_df()
     individuals_all <- individuals_all[individuals_all$IBD1Seg >= input$IBD1Seg[1] & individuals_all$IBD1Seg <= input$IBD1Seg[2] & 
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
+    validate(
+        need(nrow(individuals_all) > 0, "Please adjust the IBD1 Seg and IBD2 Seg")
+      )
+    
     d0 <- individuals_all$IBD2Seg>0.7
     d1.PO <- (!d0) & individuals_all$IBD1Seg+individuals_all$IBD2Seg>0.96 | (individuals_all$IBD1Seg+individuals_all$IBD2Seg>0.9 & individuals_all$IBD2Seg<0.08)
     d1.FS <- (!d0) & (!d1.PO) & individuals_all$PropIBD>0.35355 & individuals_all$IBD2Seg>=0.08
