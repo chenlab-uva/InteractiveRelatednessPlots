@@ -116,8 +116,8 @@ server <- function(input, output, session) {
     validate(
       need(nrow(k) > 0, "Please select a sample in the study dataset")
     )
-    fid <- unique(k$FID)
-    id <- unique(k$ID)
+    fid <- k$FID[1]
+    id <- k$ID[1]
     f_roh <- roh_info[roh_info$FID==fid & roh_info$ID==id,"F_ROH"]
     
     theme_set(theme_bw(base_size = 16))
