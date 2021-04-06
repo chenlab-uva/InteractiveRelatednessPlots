@@ -128,7 +128,7 @@ server <- function(input, output, session) {
         scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
         facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
         labs(x = "Position (MB)", y = "", title=paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
-                                                       " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")"))+
+                                                       " (", "\U03C0", "1=",Prop.IBD1, ";", "\U03C0", "2=", Prop.IBD2,")"))+
         theme(
           legend.position = "bottom", legend.key = element_rect(color = "black"),
           panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
@@ -171,7 +171,7 @@ server <- function(input, output, session) {
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
       labs(x = "Position (Mb)", y = "", title= paste0("IBD Segments between ", target.data$ID1, " and ", target.data$ID2, 
-                                                      " (PropIBD1=",Prop.IBD1, ";PropIBD2=", Prop.IBD2,")")) + 
+                                                      " (", "\U03C0","1=",Prop.IBD1, ";","\U03C0","2=", Prop.IBD2,")")) + 
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
         panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
