@@ -35,7 +35,7 @@ server <- function(input, output, session) {
   filename <- reactive({
     req(input$fileinfer)
     fileinfer <- input$fileinfer
-    file_prefix <- gsub(".seg", " ", fileinfer$name)
+    file_prefix <- gsub(".seg", "", fileinfer$name)
     return(file_prefix)
   })
   
