@@ -118,8 +118,8 @@ server <- function(input, output, session) {
         need(nrow(target.data) > 0, "Please select a related pair")
       )
       
-      Prop.IBD1 <- individuals_all[point.index, "IBD1Seg"]
-      Prop.IBD2 <- individuals_all[point.index, "IBD2Seg"]
+      Prop.IBD1 <- round(individuals_all[point.index, "IBD1Seg"],3)
+      Prop.IBD2 <- round(individuals_all[point.index, "IBD2Seg"],3)
       theme_set(theme_bw(base_size = 16))
       g <- ggplot() +
         geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
@@ -160,8 +160,8 @@ server <- function(input, output, session) {
     ID1 <- unique(target.data$ID1)
     ID2 <- unique(target.data$ID2)
     
-    Prop.IBD1 <- individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD1Seg"]
-    Prop.IBD2 <- individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD2Seg"]
+    Prop.IBD1 <- round(individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD1Seg"],3)
+    Prop.IBD2 <- round(individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD2Seg"],3)
     
     theme_set(theme_bw(base_size = 16))
     g <- ggplot() +
