@@ -1,4 +1,3 @@
-# ui.R
 ui <- fluidPage( 
   titlePanel(("Interface for Interactive Plot of Family Visualization")),
   sidebarLayout(position = "left",
@@ -12,23 +11,30 @@ ui <- fluidPage(
                                                 value = "", width = "100px")
                                )),
                              actionButton(inputId = "EnterFID", label = "Enter Sample FID"),
-                             selectizeInput("Pairs_ID1_ID2", "ID1_ID2", choices =c(Choose='')),
+                             #selectizeInput("Pairs_ID1_ID2", "ID1_ID2", choices =c(Choose='')),
                              #fileInput("fileibdseg", "Choose IBDSeg files", multiple=TRUE),
                              fileInput("fileinfer", "Choose a *.seg file"),
                              fileInput("fileibdseg", "Choose a *.segments.gz file"),
                              fileInput("fileallseg", "Choose a text file with all segments information", accept = "text"),
                              
-                  width = 2
+                             width = 2
                 ),
                 mainPanel(
                   fluidRow(
                     fluidRow("Documented versus Inferred Family",
                              column(6,plotOutput('plot1')),
-                             column(6,plotOutput('plot2'))
+                             column(6,plotOutput('plot2',click = "plot_click")),
+                             
+                             fluidRow(
+                               column(width = 5,
+                                      verbatimTextOutput("click_info"),
+                                      verbatimTextOutput("last_infor"))
+                             )
                     ),
                     fluidRow(
-                             column(8, plotOutput('plot3', height="600px")))   
-                  
+                      column(8, plotOutput('plot3', height="600px"))
+                    )   
+                    
                   )
-  )
-))
+                )
+  ))
