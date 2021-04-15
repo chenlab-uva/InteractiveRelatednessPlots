@@ -177,7 +177,7 @@ server <- function(input, output, session) {
       fileibdseg <- input$fileibdseg # *.gz
       ibdseg <- read.table(fileibdseg$datapath, header = TRUE, stringsAsFactors = FALSE)
       segments <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
-      target.data <- segments[segments$ID1==ID1 & segments$ID2==ID2,   ]
+      target.data <- segments[(segments$ID1==ID1 & segments$ID2==ID2) | (segments$ID1==ID2 & segments$ID2==ID1) ,   ]
       
       shiny::validate(need(nrow(target.data) >0, "No related inforamtion. Please select another pair"))
       
