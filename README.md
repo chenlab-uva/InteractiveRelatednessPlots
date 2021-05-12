@@ -51,4 +51,5 @@ library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "FamilyVisualization")
 ```
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/FamilyVisualization/Family_Example.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/FamilyVisualization/plot1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/FamilyVisualization/plot2.png" width="854" height="480">
