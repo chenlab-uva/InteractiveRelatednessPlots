@@ -5,14 +5,13 @@ ui <- fluidPage(
                              fileInput("file1", "Choose a *splitped.txt file"),
                              fileInput("file2", "Choose a *.kin file"),
                              fluidRow(
-                               column(5, ofset = 3,
+                               column(5, offset = 0,
+                                      
                                       textInput(inputId = "FamilyID",
-                                                label = "FID",
+                                                label = "Family ID",
                                                 value = "", width = "100px")
                                )),
-                             actionButton(inputId = "EnterFID", label = "Enter Sample FID"),
-                             #selectizeInput("Pairs_ID1_ID2", "ID1_ID2", choices =c(Choose='')),
-                             #fileInput("fileibdseg", "Choose IBDSeg files", multiple=TRUE),
+                             actionButton(inputId = "EnterFID", label = "Submit Family ID"),
                              fileInput("fileinfer", "Choose a *.seg file"),
                              fileInput("fileibdseg", "Choose a *.segments.gz file"),
                              fileInput("fileallseg", "Choose a text file with all segments information", accept = "text"),
