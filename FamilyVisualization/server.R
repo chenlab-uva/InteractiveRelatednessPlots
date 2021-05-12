@@ -24,7 +24,6 @@ server <- function(input, output, session) {
     all_kin <- kin_infer()
     onedf <- all_kin[all_kin$FID==input$FamilyID,]
     pairs.list <- paste(onedf$ID1, onedf$ID2, sep = "_")
-    #updateSelectizeInput(session, "Pairs_ID1_ID2", label = "ID1_ID2", choices = c(Choose='', pairs.list), selected = NULL)
     return(onedf)
   })
   
@@ -108,9 +107,11 @@ server <- function(input, output, session) {
     data.all[data.all$Error==0.5|data.all$Error==0,"Error"] <- 1
     fam.sub <- data.all[data.all$FID==f,][, 2:7]
     # shiny::validate(need(nrow(fam) > 0 , "Please select a valid Family ID"))
-      shiny::validate(need(nrow(fam.sub) >0, "Please select a valid Family ID"))
+    shiny::validate(need(nrow(fam.sub) >0, "Please select a valid Family ID"))
     id <- unique(mapply(c, fam.sub[,c(1,3)], fam.sub[,c(2, 4)]))
     g <- graph_from_data_frame(d=fam.sub, vertices=id[, 1], directed=FALSE)
+    # edit the margin 05/12
+    par(mar=c(0,0,0,0)+.1)
     plot(g, edge.width=fam.sub$Error, vertex.size=27, vertex.color=NA, vertex.label.cex=1,
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
@@ -143,26 +144,39 @@ server <- function(input, output, session) {
     fam.sub.inf.ID <- fam.sub.inf[,c(1,2)]
     
     dist.comb <- NULL
+    loc.index <- NULL
     for (i in 1:nrow(fam.sub.inf.ID)){
       pair1 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,1]),]
       pair2 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,2]),]
       dot <- c(input$plot_click$x, input$plot_click$y)
-      dist.comb  <- c(dist.comb, dist_func(dot,pair1,pair2))
+      x.max <- max(coords_value[,1])
+      x.min <- min(coords_value[,1])
+      y.max <- max(coords_value[,2])
+      y.min <- min(coords_value[,2])
+      x.trans <- (x.max-x.min)*(input$plot_click$x + 1)/2 + x.min
+      y.trans <- (y.max-y.min)*(input$plot_click$y + 1)/2 + y.min
+      dot.trans <- c(x.trans, y.trans)
+      dist.comb  <- c(dist.comb, dist_func(dot.trans,pair1,pair2))
+      if ((dot.trans[1]-pair1[1])*(dot.trans[1]-pair2[1]) < 0 && (dot.trans[2]-pair1[2])*(dot.trans[2]-pair2[2]) < 0)
+        loc.index <- c(loc.index,1) else {
+          loc.index <- c(loc.index,0)
+        }
     }
-    selected.pair <- fam.sub.inf.ID[which.min(dist.comb),]
+    ID.index.dist <- cbind(fam.sub.inf.ID, loc.index, dist.comb)
+    ID.range <- ID.index.dist[loc.index==1,]
+    selected.pair <- ID.range[which.min(ID.range[,4]),c(1,2)]
+    
+    
+    #selected.pair <- fam.sub.inf.ID[which.min(dist.comb),]
     
     output$plot3 <- renderPlot({
       req(one_fam)
       req(input$fileinfer)
       req(input$fileibdseg)
       req(input$fileallseg)
-      #req(input$Pairs_ID1_ID2)
-     
-      #one_fam_df <- one_fam( )
       f <- unique(one_fam_df$FID)
-      #ID1_ID2 <- input$Pairs_ID1_ID2
-      #ID1 <- unlist(strsplit(ID1_ID2,"_"))[1]
-      #ID2 <- unlist(strsplit(ID1_ID2,"_"))[2]
+      shiny::validate(need(nrow(selected.pair) >0, "No related inforamtion. Please click a related pair"))
+      
       ID1 <- selected.pair[1,1]
       ID2 <- selected.pair[1,2]
       
@@ -181,8 +195,9 @@ server <- function(input, output, session) {
       
       shiny::validate(need(nrow(target.data) >0, "No related inforamtion. Please select another pair"))
       
-      Prop.IBD1 <- formatC(individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD1Seg"], digits = 3, format = "f")
-      Prop.IBD2 <- formatC(individuals_all[individuals_all$ID1==ID1 & individuals_all$ID2==ID2, "IBD2Seg"], digits = 3, format = "f")
+      
+      Prop.IBD1 <- formatC(individuals_all[(individuals_all$ID1==ID1 & individuals_all$ID2==ID2)| (individuals_all$ID1==ID2 & individuals_all$ID2==ID1), "IBD1Seg"], digits = 3, format = "f")
+      Prop.IBD2 <- formatC(individuals_all[(individuals_all$ID1==ID1 & individuals_all$ID2==ID2) | (individuals_all$ID1==ID2 & individuals_all$ID2==ID1), "IBD2Seg"], digits = 3, format = "f")
       
       theme_set(theme_bw(base_size = 16))
       g <- ggplot() +
@@ -192,7 +207,7 @@ server <- function(input, output, session) {
         scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
         facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
         labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments between ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
-                              list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2))) + 
+                                                           list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2))) + 
         theme(
           legend.position = "bottom", legend.key = element_rect(color = "black"),
           panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
