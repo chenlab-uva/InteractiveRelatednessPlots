@@ -20,7 +20,7 @@ ui <- fluidPage(
                 ),
                 mainPanel(
                   fluidRow(
-                    fluidRow("Documented versus Inferred Family",
+                    fluidRow("Documented versus Inferred",
                              column(6,plotOutput('plot1')),
                              column(6,plotOutput('plot2',click = "plot_click")),
                              
