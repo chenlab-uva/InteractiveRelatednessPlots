@@ -5,21 +5,17 @@ ui <- fluidPage(
                              fileInput("fileinfer", "Choose a *.seg file"),
                              fileInput("fileibdseg", "Choose a *.segments.gz file"),
                              fileInput("fileallseg", "Choose a text file with all segments information", accept = "text"),
+                             fluidRow(
+                               column(8,
+                                      textInput(inputId = "FID",
+                                                label = "Family ID (Optional)",
+                                                value = "All")
+                               )),
+                             actionButton(inputId = "EnterFID", label = "Generate Plots"),
+                             #actionButton(inputId = "EnterAllFID", label = "Clear"),
                              sliderInput("IBD1Seg", "IBD1Seg_Range:", min = 0, max = 1,value = c(0,1)),
                              sliderInput("IBD2Seg", "IBD2Seg_Range:", min = 0, max = 1,value = c(0,1)),
-                             fluidRow(
-                               column(5, textInput(inputId = "ID1",
-                                                   label = "ID1",
-                                                   value = " ",
-                                                   width = "100px")
-                               ),
-                               column(5, ofset = 3,
-                                      textInput(inputId = "ID2",
-                                                label = "ID2",
-                                                value = "",
-                                                width = "100px")
-                               )),
-                             actionButton(inputId = "EnterIDs", label = "Enter Sample1 ID and Sample2 ID"),
+                             selectizeInput("IDs", "IDs",choices =c(Choose='')),
                              width = 2
                 ),
                 mainPanel(
@@ -31,15 +27,16 @@ ui <- fluidPage(
                                            plotOutput(outputId = "plot2", height = "600px", width = "100%")
                                )),
                              fluidRow(
-                               column(width = 8,
+                               dataTableOutput(outputId = "dt1")
+                             ),
+                             fluidRow(
+                               column(width = 5,
                                       verbatimTextOutput("click_info"),
-                                      verbatimTextOutput("last_infor")        
-                               )
-                             )
+                                      verbatimTextOutput("last_infor")))
                     ),
                     tabPanel("IBD Segments for the Selected Pair",
                              plotOutput("plot3",height = "600px", width = "80%"),
-                             dataTableOutput(outputId = "dt1")
+                             dataTableOutput(outputId = "dt2")
                     )
                     
                   )))
