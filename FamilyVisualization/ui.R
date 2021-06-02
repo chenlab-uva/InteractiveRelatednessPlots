@@ -3,8 +3,8 @@ ui <- fluidPage(
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
                              textInput("path", "Path for KING --ibdseg output files", defaultpath),
-                             textInput("prefix", "Prefix for KING --ibdseg inference", "t1dgc"),
-                             textInput("FamilyID", "Family ID for the family to be visualized", "IMCHIP25"),
+                             textInput("prefix", "Prefix for KING --ibdseg inference", "king"),
+                             textInput("FamilyID", "Family ID for the family to be visualized", ""),
                              actionButton(inputId = "EnterFID", label = "Submit"), 
                              width = 2
                 ),
