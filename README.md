@@ -40,8 +40,8 @@ runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "IBDSeg")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/IBDSeg1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/IBDSeg2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/viewIBD_1_All.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/viewIBD_2_onepair.png" width="854" height="480">
 
 
 ## Visualization of Families
