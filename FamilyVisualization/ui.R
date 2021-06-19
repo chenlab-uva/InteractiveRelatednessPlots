@@ -2,27 +2,34 @@ ui <- fluidPage(
   titlePanel(("Interface for Interactive Plot of Family Visualization")),
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
-                             textInput("path", "Path for KING --ibdseg output files", defaultpath),
-                             textInput("prefix", "Prefix for KING --ibdseg inference", "king"),
-                             textInput("FamilyID", "Family ID for the family to be visualized", ""),
-                             actionButton(inputId = "EnterFID", label = "Submit"), 
+                             actionButton(inputId = "filechoose", label = "Step 1: Choose *.seg file"),
+                             textInput(inputId = "FamilyIDtype", label = "Step 2: Please type ID for the family to be visualized", value = NULL),
+                             selectizeInput("FamilySize", "Or Step 2b: Please specify the family size", choices =c(Choose='')),
+                             selectizeInput("FamilyID", "And then choose a family", choices =c(Choose='')),
                              width = 2
                 ),
                 mainPanel(
-                  fluidRow(
-                    fluidRow(
-                      column(6,plotOutput('plot1')),
-                      column(6,plotOutput('plot2',click = "plot_click")),
-                      fluidRow(
-                        column(width = 5,
-                               verbatimTextOutput("click_info"),
-                               verbatimTextOutput("last_infor"))
-                      )
+                  tabsetPanel(id = "inTabset",
+                    tabPanel("Main Plot", value = "panel1",
+                             fluidRow(
+                               column(6,plotOutput('plot1')),
+                               column(6,plotOutput('plot2',click = "plot_click_main"))
+                             ),
+                             fluidRow(
+                               column(12, plotOutput('plot3', height="600px"))
+                             )   
+                             
+                             
                     ),
-                    fluidRow(
-                      column(8, plotOutput('plot3', height="600px"))
-                    )   
+                    tabPanel("Selected Family ID to be visualized", value = "panel2",
+                             fluidRow(
+                               column(6,plotOutput('plot4')),
+                               column(6,plotOutput('plot5',click = "plot_click"))
+                             ),
+                             fluidRow(
+                               column(12, plotOutput('plot6', height="600px"))
+                             )  
+                    )
                     
-                  )
-                )
+                  ))
   ))
