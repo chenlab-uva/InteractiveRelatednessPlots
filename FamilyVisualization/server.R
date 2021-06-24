@@ -1,15 +1,15 @@
+
 server <- function(input, output, session) {
   
   path <- reactiveValues(
     loc = NULL
   )
   
-  click_val <- reactiveValues(clickx = NULL, clicky = NULL)
+  prefix <- reactiveValues(
+    name = NULL
+  )
   
-  observeEvent(input$FamilySize,{
-    click_val$x <- NULL
-    click_val$y <- NULL
-  })
+  click_val <- reactiveValues(clickx = NULL, clicky = NULL)
   
   observe({
     req(input$plot_click)
@@ -19,25 +19,23 @@ server <- function(input, output, session) {
   
   observeEvent(input$filechoose,{
     fullpath <- file.choose()
-    prefix.path <- unlist(strsplit(fullpath, "[.]"))[1]
-    path$loc <- prefix.path
-    prefix.infor <- unlist(strsplit(prefix.path, "/"))[length(unlist(strsplit(prefix.path, "/")))]
+    file.base <- basename(fullpath)
+    file.dir <- dirname(fullpath)
+    file.prefix <- gsub(".seg","", file.base)
+    prefix$name <- file.prefix
+    path$loc <- paste(file.dir, file.prefix, sep = "/")
     peddf <- allped_df()
-    # ignore samples with status 1, since they were created manually.
     peddf <- peddf[peddf$Status==0,]
-    # 
     family.size.df <- as.data.frame(table(peddf$FID))
     family.size.val <- unique(family.size.df$Freq)
     family.size.order <- family.size.val[order(family.size.val, decreasing = T)]
-    updateTextInput(session, "FamilyIDtype", paste("Step 2: Please type ID for the family to be visualized in", prefix.infor, "data"), value = NULL)
-    updateSelectizeInput(session, "FamilySize", paste("Step 2b: please specify the family size in", prefix.infor, "data"), choices = c(Choose='', family.size.order), selected = NULL)
+    updateTextInput(session, "FamilyIDtype", paste("Step 2: Please type ID for the family to be visualized in", file.prefix, "data"), value = NULL)
+    updateSelectizeInput(session, "FamilySize", paste("Step 2b: please specify the family size in", file.prefix, "data"), choices = c(Choose='', family.size.order), selected = NULL)
   })
   
   observeEvent(input$FamilySize, {
     peddf <- allped_df()
-    # ignore samples with status 1, since they were created manually.
     peddf <- peddf[peddf$Status==0,]
-    #
     family.size.df <- as.data.frame(table(peddf$FID))
     new.label <- paste("And then choose a family of size", input$FamilySize)
     updateSelectizeInput(session, "FamilyID", new.label, choices = c(Choose='', as.character(family.size.df[family.size.df$Freq==input$FamilySize, "Var1"])), selected = NULL)
@@ -56,7 +54,7 @@ server <- function(input, output, session) {
     req(path$loc)
     splitpedfile <- paste(path$loc,"splitped.txt", sep = "")
     validate(
-      need(file.exists(splitpedfile), paste0(path$loc, "splitped.txt is missing"))
+      need(file.exists(splitpedfile), paste0(prefix$name, "splitped.txt is missing"))
     )
     peddf <- read.table(splitpedfile, stringsAsFactors = FALSE)[,c(1,2,5,6,7,8,9)]
     colnames(peddf) <- c("FID", "ID", "FA", "MO", "Sex", "Affected", "Status")
@@ -74,7 +72,6 @@ server <- function(input, output, session) {
     one_ped <- one_ped[one_ped$FID == input$FamilyID, ]
     validate(
       need(nrow(one_ped) > 0, "Please type a valid family ID")
-           #"Please select a valid Family ID with pedigree information"
     )
     return(one_ped)
   })
@@ -87,7 +84,6 @@ server <- function(input, output, session) {
     one_ped <- allped_df()
     one_ped <- one_ped[one_ped$FID == input$FamilyIDtype, ]
     validate(
-      # need(nrow(one_ped) > 0, "Please select a valid Family ID with pedigree information")
       need(nrow(one_ped) > 0, "Please type a valid family ID")
     )
     return(one_ped)
@@ -99,7 +95,7 @@ server <- function(input, output, session) {
     req(input$FamilyID)
     fileinfer <- paste(path$loc, ".seg", sep = "")
     validate(
-      need(file.exists(fileinfer), paste0(path$loc, ".seg", " is missing"))
+      need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
     )
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
@@ -116,7 +112,7 @@ server <- function(input, output, session) {
     req(input$FamilyIDtype)
     fileinfer <- paste(path$loc, ".seg", sep = "")
     validate(
-      need(file.exists(fileinfer), paste0(path$loc, ".seg", " is missing"))
+      need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
     )
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
@@ -131,9 +127,8 @@ server <- function(input, output, session) {
   
   allseg_df <- reactive({
     req(path$loc)
-    #req(input$FamilyID)
     fileallseg <- paste0(path$loc,"allsegs.txt")
-    validate(need(file.exists(fileallseg), paste0(input$prefix, "allsegs.txt is missing")))
+    validate(need(file.exists(fileallseg), paste0(prefix$name, "allsegs.txt is missing")))
     allseg <- read.table(fileallseg, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     all_seg <- allseg[allseg$Chr <= 22, ]
@@ -144,7 +139,7 @@ server <- function(input, output, session) {
     req(path$loc)
     fileibdseg <- paste(path$loc, ".segments.gz", sep = "")
     validate(
-      need(file.exists(fileibdseg), paste0(path$loc, ".segments.gz is missing"))
+      need(file.exists(fileibdseg), paste0(prefix$name, ".segments.gz is missing"))
     )
     ibdseg <- fread(fileibdseg, header=F, data.table=F)
     colnames(ibdseg) <- c("FID1","ID1","FID2","ID2","IBDType", "Chr", "StartMB","StopMB","StartSNP","StopSNP","N_SNP","Length") 
@@ -174,7 +169,6 @@ server <- function(input, output, session) {
   })
   coords_info_main  <- reactive({
     req(kin_infer_main())
-    #req(one_ped_df_main())
     req(input$FamilyIDtype)
     f <- input$FamilyIDtype
     data <- kin_infer_main()
@@ -207,7 +201,6 @@ server <- function(input, output, session) {
     req(allseg_df())
     req(segments_df())
     req(input$FamilyIDtype)
-    # add here
     f <- input$FamilyIDtype
     fam <- one_ped_df_main()
     if (all(fam[, c("FA", "MO")]==0)){
@@ -236,11 +229,9 @@ server <- function(input, output, session) {
     data.fam <- merge(data, ped, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
     data.all <- merge(data.fam, ped, by.x = c("FID2", "ID2"), by.y = c("FID", "ID"))
     shiny::validate(need(nrow(data.all) >0, "Please select a valid Family ID with pedigree information"))
-    # check unique ID 0610
     uni.comb <- unique(paste(data.all$FID2,data.all$ID2, sep = "_"), paste(data.all$FID1,data.all$ID1))
     uni.comb.sec <- unlist(lapply(uni.comb,function(x) unlist(strsplit(x, "_"))[2]))
     shiny::validate(need(length(uni.comb)==length(unique(uni.comb.sec)), "Unique ID please."))
-    #
     data.all[!data.all$InfType %in% Inf.type, "InfType"] <- 6
     for (i in 1:5) data.all[data.all$InfType == Inf.type[i], "InfType"] <- i
     fam.sub <- data.all[, c("ID1", "ID2", "Sex.x", "Sex.y", "InfType")]
@@ -252,6 +243,7 @@ server <- function(input, output, session) {
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
     mtext(paste("Interactive Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
   })
+  
   output$plot3 <- renderPlot({
     req(input$plot_click_main)
     req(coords_info_main())
@@ -277,14 +269,11 @@ server <- function(input, output, session) {
     for (i in 1:nrow(fam.sub.inf.ID)){
       pair1 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,1]),]
       pair2 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,2]),]
-      # dot <- c(click_val$clickx, click_val$clicky)
       dot <- c(input$plot_click_main$x, input$plot_click_main$y)
       x.max <- max(coords_value[,1])
       x.min <- min(coords_value[,1])
       y.max <- max(coords_value[,2])
       y.min <- min(coords_value[,2])
-      #x.trans <- (x.max-x.min)*(click_val$clickx + 1)/2 + x.min
-      #y.trans <- (y.max-y.min)*(click_val$clicky + 1)/2 + y.min
       x.trans <- (x.max-x.min)*(input$plot_click_main$x + 1)/2 + x.min
       y.trans <- (y.max-y.min)*(input$plot_click_main$y + 1)/2 + y.min
       dot.trans <- c(x.trans, y.trans)
@@ -294,10 +283,6 @@ server <- function(input, output, session) {
           loc.index <- c(loc.index,0)
         }
     }
-    
-    
-    
-    
     
     
     ID.index.dist <- cbind(fam.sub.inf.ID, loc.index, dist.comb)
@@ -348,7 +333,6 @@ server <- function(input, output, session) {
     req(allseg_df())
     req(segments_df())
     req(input$FamilyID)
-    # add here
     f <- input$FamilyID
     fam <- one_ped_df()
     if (all(fam[, c("FA", "MO")]==0)){
@@ -378,11 +362,9 @@ server <- function(input, output, session) {
     data.fam <- merge(data, ped, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
     data.all <- merge(data.fam, ped, by.x = c("FID2", "ID2"), by.y = c("FID", "ID"))
     shiny::validate(need(nrow(data.all) >0, "Please select a valid Family ID with pedigree information"))
-    # check unique ID 0610
     uni.comb <- unique(paste(data.all$FID2,data.all$ID2, sep = "_"), paste(data.all$FID1,data.all$ID1))
     uni.comb.sec <- unlist(lapply(uni.comb,function(x) unlist(strsplit(x, "_"))[2]))
     shiny::validate(need(length(uni.comb)==length(unique(uni.comb.sec)), "Unique ID please."))
-    #
     data.all[!data.all$InfType %in% Inf.type, "InfType"] <- 6
     for (i in 1:5) data.all[data.all$InfType == Inf.type[i], "InfType"] <- i
     fam.sub <- data.all[, c("ID1", "ID2", "Sex.x", "Sex.y", "InfType")]
@@ -419,10 +401,8 @@ server <- function(input, output, session) {
     dist.comb <- NULL
     loc.index <- NULL
     for (i in 1:nrow(fam.sub.inf.ID)){
-      
       pair1 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,1]),]
       pair2 <- coords_value[which(V(g)$name==fam.sub.inf.ID[i,2]),]
-      #dot <- c(input$plot_click$x, input$plot_click$y)
       dot <- c(click_val$clickx, click_val$clicky)
       x.max <- max(coords_value[,1])
       x.min <- min(coords_value[,1])
@@ -430,8 +410,6 @@ server <- function(input, output, session) {
       y.min <- min(coords_value[,2])
       x.trans <- (x.max-x.min)*(click_val$clickx + 1)/2 + x.min
       y.trans <- (y.max-y.min)*(click_val$clicky + 1)/2 + y.min
-      #x.trans <- (x.max-x.min)*(input$plot_click$x + 1)/2 + x.min
-      #y.trans <- (y.max-y.min)*(input$plot_click$y + 1)/2 + y.min
       dot.trans <- c(x.trans, y.trans)
       dist.comb  <- c(dist.comb, dist_func(dot.trans,pair1,pair2))
       if ((dot.trans[1]-pair1[1])*(dot.trans[1]-pair2[1]) < 0 && (dot.trans[2]-pair1[2])*(dot.trans[2]-pair2[2]) < 0)
@@ -439,11 +417,6 @@ server <- function(input, output, session) {
           loc.index <- c(loc.index,0)
         }
     }
-    
-    
-    
-    
-    
     
     ID.index.dist <- cbind(fam.sub.inf.ID, loc.index, dist.comb)
     ID.range <- ID.index.dist[loc.index==1,]
@@ -490,3 +463,4 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
+
