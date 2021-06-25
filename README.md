@@ -1,5 +1,5 @@
 # InteractivePlot_KING
-This repository is for the interactive plots from KING
+This repository is for the interactive plots from KING.
 
 
 
@@ -46,6 +46,14 @@ Example output
 
 
 ## Visualization of Families
+
+Run KING to get the required four files. They are *.seg, *.segments.gz, *allsegs.txt and *splitped.txt.
+
+```{bash}
+king -b hapmap.bed --ibdseg --prefix hapmap
+```
+
+Package 'shiny', 'kinship2', 'igraph', 'data.table' and 'ggplot2' are required.
 
 ```{bash}
 library(shiny)
