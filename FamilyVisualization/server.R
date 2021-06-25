@@ -1,4 +1,3 @@
-
 server <- function(input, output, session) {
   
   path <- reactiveValues(
@@ -89,10 +88,10 @@ server <- function(input, output, session) {
     return(one_ped)
   })
   
-  
+  # Please don't filter the Family ID information at this step.
   kin_infer <- reactive({
     req(path$loc)
-    req(input$FamilyID)
+    #req(input$FamilyID)
     fileinfer <- paste(path$loc, ".seg", sep = "")
     validate(
       need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
@@ -100,16 +99,16 @@ server <- function(input, output, session) {
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
     kindf <- kindf[kindf$InfType!="UN", ]
-    kindf <- kindf[kindf$FID1 == input$FamilyID | kindf$FID2 == input$FamilyID, ]
+    #kindf <- kindf[kindf$FID1 == input$FamilyID | kindf$FID2 == input$FamilyID, ]
     validate(
-      need(nrow(kindf) > 0, "Please select a valid Family ID with relatedness information")
+      need(nrow(kindf) > 0, "No related samples")
     )
     return(kindf)
   })
   
   kin_infer_main <- reactive({
     req(path$loc)
-    req(input$FamilyIDtype)
+    #req(input$FamilyIDtype)
     fileinfer <- paste(path$loc, ".seg", sep = "")
     validate(
       need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
@@ -117,9 +116,9 @@ server <- function(input, output, session) {
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
     kindf <- kindf[kindf$InfType!="UN", ]
-    kindf <- kindf[kindf$FID1 == input$FamilyIDtype | kindf$FID2 == input$FamilyIDtype, ]
+    #kindf <- kindf[kindf$FID1 == input$FamilyIDtype | kindf$FID2 == input$FamilyIDtype, ]
     validate(
-      need(nrow(kindf) > 0, "Please select a valid Family ID with relatedness information")
+      need(nrow(kindf) > 0, "No related samples")
     )
     return(kindf)
   })
@@ -147,12 +146,73 @@ server <- function(input, output, session) {
     return(ibdseg)
   })
   
-  coords_info  <- reactive({
+  related_pairs_main <- reactive({
+    req(kin_infer_main())
+    req(allped_df())
+    req(input$FamilyIDtype)
+    f <- input$FamilyIDtype
+    data <- kin_infer_main()
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    return(data)
+  })
+  related_pairs <- reactive({
     req(kin_infer())
-    req(one_ped_df())
+    req(allped_df())
     req(input$FamilyID)
     f <- input$FamilyID
     data <- kin_infer()
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    return(data)
+  })
+  
+  
+  coords_info  <- reactive({
+    req(kin_infer())
+    req(one_ped_df())
+    req(related_pairs())
+    req(input$FamilyID)
+    f <- input$FamilyID
+    data <- related_pairs()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -169,9 +229,10 @@ server <- function(input, output, session) {
   })
   coords_info_main  <- reactive({
     req(kin_infer_main())
+    req(allped_df())
     req(input$FamilyIDtype)
     f <- input$FamilyIDtype
-    data <- kin_infer_main()
+    data <- related_pairs_main()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -219,10 +280,11 @@ server <- function(input, output, session) {
   output$plot2 <- renderPlot({
     req(one_ped_df_main())
     req(coords_info_main())
+    req(related_pairs_main())
     req(segments_df())
     coords_value <- coords_info_main()
     f <- input$FamilyIDtype
-    data <- kin_infer_main()
+    data <- related_pairs_main()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -249,7 +311,7 @@ server <- function(input, output, session) {
     req(coords_info_main())
     req(segments_df())
     f <- input$FamilyIDtype
-    data <- kin_infer_main()
+    data <- related_pairs_main()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -289,8 +351,8 @@ server <- function(input, output, session) {
     ID.range <- ID.index.dist[loc.index==1,]
     selected.pair <- ID.range[which.min(ID.range[,4]),c(1,2)]
     
-    shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
-    
+    # shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
+    shiny::validate(need(nrow(selected.pair) >0, "No close relatedness(up to 3rd degree) information. Please click a related pair"))
     ID1 <- selected.pair[1,1]
     ID2 <- selected.pair[1,2]
     
@@ -355,7 +417,7 @@ server <- function(input, output, session) {
     req(segments_df())
     coords_value <- coords_info()
     f <- input$FamilyID
-    data <- kin_infer()
+    data <- related_pairs()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -383,7 +445,7 @@ server <- function(input, output, session) {
     req(coords_info())
     req(segments_df())
     f <- input$FamilyID
-    data <- kin_infer()
+    data <- related_pairs()
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -422,7 +484,8 @@ server <- function(input, output, session) {
     ID.range <- ID.index.dist[loc.index==1,]
     selected.pair <- ID.range[which.min(ID.range[,4]),c(1,2)]
     
-    shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
+    #shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
+    shiny::validate(need(nrow(selected.pair) >0, "No close relatedness(up to 3rd degree) information. Please click a related pair"))
     
     ID1 <- selected.pair[1,1]
     ID2 <- selected.pair[1,2]
@@ -463,4 +526,3 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
-
