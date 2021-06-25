@@ -1,6 +1,12 @@
 # InteractivePlot_KING
 This repository is for the interactive plots from KING.
 
+## R packages required for these shiny apps.
+| Name  | Required R packages |
+| ------------- | ------------- |
+| viewROH  | 'shiny', 'ggplot2'  |
+| viewIBD  | 'shiny', 'ggplot2' and 'data.table'|
+| viewFamily  | 'shiny', 'ggplot2', 'data.table', 'kinship2' and 'igraph' |
 
 
 ## Interactive plots for ROH
@@ -15,13 +21,13 @@ Run the following R code in R to get interactive plots. Package 'shiny' and 'ggp
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "ROH")
+runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewROH")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/ROH_1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/ROH_2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/ROH/ROH_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/ROH_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/ROH_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/ROH_3.png" width="854" height="480">
 
 
 ## Interactive plots for IBD Segments
@@ -36,13 +42,13 @@ Run the following R code in R to get interactive plots. Package 'shiny', 'data.t
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "IBDSeg")
+runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBDSeg")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/viewIBD_1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/viewIBD_2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/IBDSeg/viewIBD_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
 
 
 ## Visualization of Families
@@ -57,8 +63,8 @@ Package 'shiny', 'kinship2', 'igraph', 'data.table' and 'ggplot2' are required.
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "FamilyVisualization")
+runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewFamily")
 ```
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/FamilyVisualization/viewFamily1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/FamilyVisualization/viewFamily2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewFamily1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewFamily2.png" width="854" height="480">
