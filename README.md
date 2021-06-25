@@ -42,7 +42,7 @@ Run the following R code in R to get interactive plots. Package 'shiny', 'data.t
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBDSeg")
+runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
 Example output
 
