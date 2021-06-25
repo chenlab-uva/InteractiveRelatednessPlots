@@ -1,5 +1,5 @@
 # Interactive Visualization of Relatedness from KING
-This repository is for the interactive plots from KING.
+This repository is for the interactive plots from KING.<br/> We use HapMap (https://www.dropbox.com/sh/gc14nids6s7bmsz/AAAzADx-_kJEAwKpwPsJnCtja?dl=0) as the example dataset. Related KING output files are saved at HapMap folder.
 
 ## R packages required for these shiny apps.
 | Name  | Required R packages |
