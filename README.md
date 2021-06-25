@@ -1,4 +1,4 @@
-# InteractivePlot_KING
+# Interactive Visualization of Relatedness from KING
 This repository is for the interactive plots from KING.
 
 ## R packages required for these shiny apps.
