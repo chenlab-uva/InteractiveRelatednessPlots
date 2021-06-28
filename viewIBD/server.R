@@ -16,13 +16,13 @@ server <- function(input, output, session) {
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
     updateTextInput(session, inputId = "FID", 
-                    label = paste("Family ID (optional) in", file.prefix, "data"), value = "All")
+                    label = paste("Optional Step2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
   })
   
   observeEvent(input$AllFID,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, "FID", label = paste("Family ID (optional) in", prefix$name, "data"), value = "All")
+    updateTextInput(session, "FID", label = paste("Optional Step2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
     updateSelectizeInput(session, "IDs", "All inferred relatives", choices =c(Choose=''))
   })
   
@@ -34,7 +34,7 @@ server <- function(input, output, session) {
   observeEvent(input$IDs, {
     updateTabsetPanel(session, "inTabset", selected = "panel2")
   })
- 
+  
   infer_df <- eventReactive(input$EnterFID, {
     req(path$pth)
     req(input$FID)
@@ -75,7 +75,7 @@ server <- function(input, output, session) {
     return(allseg)
   })
   
-
+  
   
   observeEvent(input$EnterFID, {
     infer_df_FID <- infer_df()

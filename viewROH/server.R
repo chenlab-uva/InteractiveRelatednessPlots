@@ -16,18 +16,17 @@ server <- function(input, output, session) {
     file.prefix <- gsub(".roh","", file.base)
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
-    updateTextInput(session, inputId = "FID", label = paste("Family ID (Optional) in", file.prefix, "data"), value = "All")
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
   })
-  
   
   observeEvent(input$SelectAll,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, inputId = "FID", label = paste("Family ID (Optional) in", prefix$name, "data"), value = "All")
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
     updateSelectizeInput(session, "ID", label = "Sample ID", choices = c(Choose=''))
   })
   
-
+  
   observeEvent(input$ID, {
     updateTabsetPanel(session, "inTabset", selected = "panel2")
   })

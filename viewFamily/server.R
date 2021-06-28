@@ -29,7 +29,7 @@ server <- function(input, output, session) {
     family.size.val <- unique(family.size.df$Freq)
     family.size.order <- family.size.val[order(family.size.val, decreasing = T)]
     updateTextInput(session, "FamilyIDtype", paste("Step 2: Please type ID for the family to be visualized in", file.prefix, "data"), value = NULL)
-    updateSelectizeInput(session, "FamilySize", paste("Step 2b: please specify the family size in", file.prefix, "data"), choices = c(Choose='', family.size.order), selected = NULL)
+    updateSelectizeInput(session, "FamilySize", paste("Or Step 2b: please specify the family size in", file.prefix, "data"), choices = c(Choose='', family.size.order), selected = NULL)
   })
   
   observeEvent(input$FamilySize, {
@@ -88,7 +88,7 @@ server <- function(input, output, session) {
     return(one_ped)
   })
   
-  # Please don't filter the Family ID information at this step.
+  # Please do filter the Family ID information at this step.
   kin_infer <- reactive({
     req(path$loc)
     #req(input$FamilyID)
@@ -146,12 +146,60 @@ server <- function(input, output, session) {
     return(ibdseg)
   })
   
-  related_pairs_main <- reactive({
+  coords_info  <- reactive({
+    req(kin_infer())
+    req(one_ped_df())
+    req(input$FamilyID)
+    f <- input$FamilyID
+    data <- kin_infer()
+    
+    # 06/24/2021
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    # 06/24/2021
+    
+    ped <- allped_df()
+    Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
+    Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
+    data.fam <- merge(data, ped, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
+    data.all <- merge(data.fam, ped, by.x = c("FID2", "ID2"), by.y = c("FID", "ID"))
+    shiny::validate(need(nrow(data.all) >0, "Please select a valid Family ID with pedigree inforamtion"))
+    data.all[!data.all$InfType %in% Inf.type, "InfType"] <- 6
+    for (i in 1:5) data.all[data.all$InfType == Inf.type[i], "InfType"] <- i
+    fam.sub <- data.all[, c("ID1", "ID2", "Sex.x", "Sex.y", "InfType")]
+    id <- unique(mapply(c, fam.sub[,c(1,3)], fam.sub[,c(2, 4)]))
+    g <- graph_from_data_frame(d=fam.sub, vertices=id[, 1], directed=FALSE)
+    coords <- layout_with_fr(g, grid="nogrid")
+    return(coords)
+  })
+  coords_info_main  <- reactive({
     req(kin_infer_main())
-    req(allped_df())
     req(input$FamilyIDtype)
     f <- input$FamilyIDtype
     data <- kin_infer_main()
+    
+    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -174,65 +222,8 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
-    return(data)
-  })
-  related_pairs <- reactive({
-    req(kin_infer())
-    req(allped_df())
-    req(input$FamilyID)
-    f <- input$FamilyID
-    data <- kin_infer()
-    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
-    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
-    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
-    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
-      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
-      data.other.FID <- combn(data.other[,1],2)
-      data.other.IID <- combn(data.other[,2],2)
-      all.other.pairs <- NULL
-      for (k in 1:dim(data.other.FID)[2]) {
-        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
-        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
-        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
-      }
-      all.other.pairs <- as.data.frame(all.other.pairs)
-      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
-      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
-      data <- rbind(data.f, data.f.other)
-    } else{
-      data <- data.f
-    }
-    return(data)
-  })
-  
-  
-  coords_info  <- reactive({
-    req(kin_infer())
-    req(one_ped_df())
-    req(related_pairs())
-    req(input$FamilyID)
-    f <- input$FamilyID
-    data <- related_pairs()
-    ped <- allped_df()
-    Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
-    Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
-    data.fam <- merge(data, ped, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
-    data.all <- merge(data.fam, ped, by.x = c("FID2", "ID2"), by.y = c("FID", "ID"))
-    shiny::validate(need(nrow(data.all) >0, "Please select a valid Family ID with pedigree inforamtion"))
-    data.all[!data.all$InfType %in% Inf.type, "InfType"] <- 6
-    for (i in 1:5) data.all[data.all$InfType == Inf.type[i], "InfType"] <- i
-    fam.sub <- data.all[, c("ID1", "ID2", "Sex.x", "Sex.y", "InfType")]
-    id <- unique(mapply(c, fam.sub[,c(1,3)], fam.sub[,c(2, 4)]))
-    g <- graph_from_data_frame(d=fam.sub, vertices=id[, 1], directed=FALSE)
-    coords <- layout_with_fr(g, grid="nogrid")
-    return(coords)
-  })
-  coords_info_main  <- reactive({
-    req(kin_infer_main())
-    req(allped_df())
-    req(input$FamilyIDtype)
-    f <- input$FamilyIDtype
-    data <- related_pairs_main()
+    # 06/24/2021
+    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -269,22 +260,45 @@ server <- function(input, output, session) {
       plot(g.empty, vertex.size=27, vertex.color=NA, vertex.label.cex=1, vertex.label.dist=1.6, vertex.label.degree= pi/2, 
            vertex.label.color="black", vertex.label= fam[,"ID"], edge.color=NA, layout=layout_with_fr(g.empty, grid="nogrid"), asp=0,
            vertex.shape=c("none", "square", "circle")[1+fam[,"Sex"]])
-      mtext(paste("Reported Pedigree in", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
     } else {
       pedplot <- pedigree(id = fam$ID, dadid = fam$FA, momid = fam$MO, sex = as.numeric(fam$Sex),
                           affected = as.numeric(fam$Affected), status = as.numeric(fam$Status), famid = fam$FID, missid = 0)
       plot(pedplot[toString(f)], cex = 0.5, symbolsize = 2.8)
-      mtext(paste("Reported Pedigree in", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
     }
   })
   output$plot2 <- renderPlot({
     req(one_ped_df_main())
     req(coords_info_main())
-    req(related_pairs_main())
     req(segments_df())
     coords_value <- coords_info_main()
     f <- input$FamilyIDtype
-    data <- related_pairs_main()
+    data <- kin_infer_main()
+    
+    # 06/24/2021
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -311,7 +325,32 @@ server <- function(input, output, session) {
     req(coords_info_main())
     req(segments_df())
     f <- input$FamilyIDtype
-    data <- related_pairs_main()
+    data <- kin_infer_main()
+    
+    # 06/24/2021
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -402,12 +441,12 @@ server <- function(input, output, session) {
       plot(g.empty, vertex.size=27, vertex.color=NA, vertex.label.cex=1, vertex.label.dist=1.6, vertex.label.degree= pi/2, 
            vertex.label.color="black", vertex.label= fam[,"ID"], edge.color=NA, layout=layout_with_fr(g.empty, grid="nogrid"), asp=0,
            vertex.shape=c("none", "square", "circle")[1+fam[,"Sex"]])
-      mtext(paste("Reported Pedigree in", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
     } else {
       pedplot <- pedigree(id = fam$ID, dadid = fam$FA, momid = fam$MO, sex = as.numeric(fam$Sex),
                           affected = as.numeric(fam$Affected), status = as.numeric(fam$Status), famid = fam$FID, missid = 0)
       plot(pedplot[toString(f)], cex = 0.5, symbolsize = 2.8)
-      mtext(paste("Reported Pedigree in", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
     }
   })
   
@@ -417,7 +456,36 @@ server <- function(input, output, session) {
     req(segments_df())
     coords_value <- coords_info()
     f <- input$FamilyID
-    data <- related_pairs()
+    data <- kin_infer()
+    
+    # 06/24/2021
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    # 06/24/2021
+    
+    
+    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -445,7 +513,31 @@ server <- function(input, output, session) {
     req(coords_info())
     req(segments_df())
     f <- input$FamilyID
-    data <- related_pairs()
+    data <- kin_infer()
+    
+    # 06/24/2021
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
+    data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
+    
+    if  (any(data.f.sample[, 1]!=f) & sum(data.f.sample[,1]!=f) >1 ) {
+      data.other <- data.f.sample[data.f.sample[, 1]!=f, ]
+      data.other.FID <- combn(data.other[,1],2)
+      data.other.IID <- combn(data.other[,2],2)
+      all.other.pairs <- NULL
+      for (k in 1:dim(data.other.FID)[2]) {
+        one.pair1 <- c(data.other.FID[1,k], data.other.IID[1,k], data.other.FID[2,k], data.other.IID[2,k])
+        one.pair2 <- c(data.other.FID[2,k], data.other.IID[2,k], data.other.FID[1,k], data.other.IID[1,k])
+        all.other.pairs <- rbind(all.other.pairs, one.pair1, one.pair2)
+      }
+      all.other.pairs <- as.data.frame(all.other.pairs)
+      colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
+      data <- rbind(data.f, data.f.other)
+    } else{
+      data <- data.f
+    }
+    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
