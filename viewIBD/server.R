@@ -16,13 +16,13 @@ server <- function(input, output, session) {
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
     updateTextInput(session, inputId = "FID", 
-                    label = paste("Optional Step2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
+                    label = paste("Optional Step 2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
   })
   
   observeEvent(input$AllFID,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, "FID", label = paste("Optional Step2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
+    updateTextInput(session, "FID", label = paste("Optional Step 2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
     updateSelectizeInput(session, "IDs", "All inferred relatives", choices =c(Choose=''))
   })
   
