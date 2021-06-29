@@ -16,13 +16,16 @@ server <- function(input, output, session) {
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
     updateTextInput(session, inputId = "FID", 
-                    label = paste("Optional Step 2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
+                    label = paste("Optional Step 2: please type a Family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
+    output$text <- renderText({
+      paste(file.base, "is ready to load")
+    })
   })
   
   observeEvent(input$AllFID,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, "FID", label = paste("Optional Step 2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
+    updateTextInput(session, "FID", label = paste("Optional Step 2: please type a Family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
     updateSelectizeInput(session, "IDs", "All inferred relatives", choices =c(Choose=''))
   })
   
@@ -43,7 +46,7 @@ server <- function(input, output, session) {
         infer_all <- read.table(paste0(path$pth, ".seg"), header = TRUE, stringsAsFactors = FALSE)
         infer_all <- infer_all[infer_all$FID1 == input$FID | infer_all$FID2 == input$FID, ]
       }
-    validate(
+    shiny::validate(
       need(nrow(infer_all) > 0, "Please type a valid Family ID")
     )
     updateSliderInput(session, "IBD1Seg",label = "IBD1Seg_Range",
@@ -56,7 +59,7 @@ server <- function(input, output, session) {
   })
   
   segments_df <- reactive({
-    validate(
+    shiny::validate(
       need(file.exists(paste0(path$pth, ".segments.gz")), paste0(prefix$name, "segments.gz is missing"))
     )
     ibdseg <- fread(paste0(path$pth, ".segments.gz"), header = F, data.table = F)
@@ -67,7 +70,7 @@ server <- function(input, output, session) {
   })
   
   all_seg_df <- reactive({
-    validate(
+    shiny::validate(
       need(file.exists(paste0(path$pth, "allsegs.txt")), paste0(prefix$name, "allsegs.txt is missing"))
     )
     allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
@@ -98,7 +101,7 @@ server <- function(input, output, session) {
     individuals_all <- infer_df()
     individuals_all <- individuals_all[individuals_all$IBD1Seg >= input$IBD1Seg[1] & individuals_all$IBD1Seg <= input$IBD1Seg[2] & 
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
-    validate(
+    shiny::validate(
       need(nrow(individuals_all) > 0, "Please adjust the IBD1 Seg and IBD2 Seg")
     )
     
@@ -147,7 +150,7 @@ server <- function(input, output, session) {
         segments$IBDType <- factor(segments$IBDType, levels = c("IBD0", "IBD1", "IBD2"))
         target.data <- segments[segments$ID1==individuals_all[point.index,"ID1"] & segments$ID2==individuals_all[point.index,"ID2"], ]
       }
-    validate(
+    shiny::validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
     Prop.IBD1 <- formatC(individuals_all[point.index, "IBD1Seg"], digits = 3, format = "f")
@@ -186,7 +189,7 @@ server <- function(input, output, session) {
         segments$IBDType <- factor(segments$IBDType, levels = c("IBD0", "IBD1", "IBD2"))
         target.data <- segments[segments$ID1==individuals_all[point.index,"ID1"] & segments$ID2==individuals_all[point.index,"ID2"], ]
       }
-    validate(
+    shiny::validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
     target.data
@@ -205,7 +208,7 @@ server <- function(input, output, session) {
     pair2 <- unlist(strsplit(pairs, " & "))[2]
     #target.data <- input_target()
     target.data <- all_seg_gz[(all_seg_gz$ID1==pair1 & all_seg_gz$ID2==pair2) | (all_seg_gz$ID2==pair1 & all_seg_gz$ID1==pair2), ]
-    validate(
+    shiny::validate(
       need(nrow(target.data) > 0, "Please select a related pair")
     )
     
@@ -244,7 +247,7 @@ server <- function(input, output, session) {
     pair2 <- unlist(strsplit(pairs, " & "))[2]
     all_seg_df <- segments_df()
     select_df <- all_seg_df[(all_seg_df$ID1 == pair1 & all_seg_df$ID2 == pair2) |(all_seg_df$ID2 == pair1 & all_seg_df$ID1 == pair2), ]
-    validate(
+    shiny::validate(
       need(nrow(select_df) > 0, "Please select a related pair")
     )
     select_df
@@ -254,3 +257,4 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
+

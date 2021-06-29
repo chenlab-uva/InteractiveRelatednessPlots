@@ -1,4 +1,4 @@
-library(ggplot2)
 library(data.table)
+library(ggplot2)
+library(R.utils)
 options(scipen = 999)
-options(shiny.maxRequestSize = 30*1024^2)

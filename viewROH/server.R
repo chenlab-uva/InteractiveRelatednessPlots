@@ -16,13 +16,17 @@ server <- function(input, output, session) {
     file.prefix <- gsub(".roh","", file.base)
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
-    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a Family ID in", file.prefix, "data or select all samples"), value = "All")
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
+    output$text <- renderText({
+      paste(file.base, "is ready to load")
+    })
+    
   })
   
   observeEvent(input$SelectAll,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a Family ID in", prefix$name, "data or select all samples"), value = "All")
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
     updateSelectizeInput(session, "ID", label = "Sample ID", choices = c(Choose=''))
   })
   
@@ -42,18 +46,18 @@ server <- function(input, output, session) {
     req(input$FID)
     roh <- read.table(paste0(path$pth,".roh"), header = TRUE, stringsAsFactors = FALSE)
     if (input$FID != "All")  roh <- roh[roh$FID == input$FID, ]
-    validate(
+    shiny::validate(
       need(nrow(roh) > 0, "please type a valid Family ID")
     )
     if ("F_ROH_X" %in% colnames(roh)) {
       rohinfo <- roh[roh$F_ROH > 2^-6.5, c("FID","ID","F_ROH_X","F_ROH")]
     } else {
       set.seed(123)
-      roh$F_ROH_X <- runif(nrow(roh), 0,1)
+      roh$F_ROH_X <- round(runif(nrow(roh), 0,1),4)
       roh$tmp_F_ROH_X <- 1
       rohinfo <- roh[roh$F_ROH > 2^-6.5, c("FID","ID","F_ROH_X","F_ROH", "tmp_F_ROH_X")]
     }
-    validate(
+    shiny::validate(
       need(nrow(rohinfo) > 0, "No samples with F_ROH larger than 2^-6.5")
     )
     updateSliderInput(session, "F_ROH_X_Range",label = "F_ROH_X_Range",
@@ -77,7 +81,7 @@ server <- function(input, output, session) {
   
   segments_df <- reactive({
     req(path$pth)
-    validate(
+    shiny::validate(
       need(file.exists(paste0(path$pth, ".rohseg.gz")), paste0(path$pth, ".rohseg.gz is missing"))
     )
     rohseg <- read.table(paste0(path$pth, ".rohseg.gz"), header = TRUE, stringsAsFactors = FALSE)
@@ -87,7 +91,7 @@ server <- function(input, output, session) {
   
   all_seg_df <- reactive({
     req(path$pth)
-    validate(
+    shiny::validate(
       need(file.exists(paste0(path$pth, "allsegs.txt")), paste0(path$pth, "allsegs.txt is missing"))
     )
     allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
@@ -104,8 +108,8 @@ server <- function(input, output, session) {
     roh_info <- roh_info_df()
     target.data <- roh_info[roh_info$F_ROH >= input$F_ROH_Range[1] & roh_info$F_ROH <= input$F_ROH_Range[2] & 
                               roh_info$F_ROH_X >= input$F_ROH_X_Range[1] & roh_info$F_ROH_X <= input$F_ROH_X_Range[2],]
-    validate(
-      need(nrow(target.data) > 0, "No samples in this region. Please adjust the F_ROH and F_ROH_X")
+    shiny::validate(
+      need(nrow(target.data) > 0, "No samples in this region. Please adjust F_ROH and F_ROH_X")
     )
     ylab.title <- ifelse("tmp_F_ROH_X" %in% colnames(target.data), "F_ROH_X (Randomly Generated)",
                          "F_ROH_X")
@@ -115,9 +119,6 @@ server <- function(input, output, session) {
   
   output$plot2 <- renderPlot({
     req(input$EnterFID)
-    #req(roh_info_df())
-    #req(segments_df())
-    #req(all_seg_df())
     req(input$plot_click)
     roh_info <- roh_info_df()
     segments <- segments_df()
@@ -130,7 +131,7 @@ server <- function(input, output, session) {
     } else {
       k <- segments[segments$FID==nameFID & segments$ID==nameID, ]
     }
-    validate(
+    shiny::validate(
       need(nrow(k) > 0, "Please select a sample")
     )
     theme_set(theme_bw(base_size = 16))
@@ -170,7 +171,7 @@ server <- function(input, output, session) {
     } else {
       k <- segments[segments$FID==nameFID & segments$ID==nameID, ]
     }
-    validate(
+    shiny::validate(
       need(nrow(k) > 0, "Please select a sample")
     )
     k
@@ -209,7 +210,7 @@ server <- function(input, output, session) {
     req(input$ID)
     allrohgz <- segments_df()
     select_df  <- allrohgz[allrohgz$ID == input$ID, ]
-    validate(need(nrow(select_df) > 0, "Please select a sample in the study dataset"))
+    shiny::validate(need(nrow(select_df) > 0, "Please select a sample in the study dataset"))
     select_df
   })
   

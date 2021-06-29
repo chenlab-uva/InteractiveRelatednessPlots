@@ -20,6 +20,9 @@ server <- function(input, output, session) {
     fullpath <- file.choose()
     file.base <- basename(fullpath)
     file.dir <- dirname(fullpath)
+    output$text <- renderText({
+      paste(file.base, "is ready to load")
+    })
     file.prefix <- gsub(".seg","", file.base)
     prefix$name <- file.prefix
     path$loc <- paste(file.dir, file.prefix, sep = "/")
@@ -52,7 +55,7 @@ server <- function(input, output, session) {
   allped_df <- reactive({
     req(path$loc)
     splitpedfile <- paste(path$loc,"splitped.txt", sep = "")
-    validate(
+    shiny::validate(
       need(file.exists(splitpedfile), paste0(prefix$name, "splitped.txt is missing"))
     )
     peddf <- read.table(splitpedfile, stringsAsFactors = FALSE)[,c(1,2,5,6,7,8,9)]
@@ -69,7 +72,7 @@ server <- function(input, output, session) {
     req(allped_df())
     one_ped <- allped_df()
     one_ped <- one_ped[one_ped$FID == input$FamilyID, ]
-    validate(
+    shiny::validate(
       need(nrow(one_ped) > 0, "Please type a valid family ID")
     )
     return(one_ped)
@@ -82,7 +85,7 @@ server <- function(input, output, session) {
     req(allped_df())
     one_ped <- allped_df()
     one_ped <- one_ped[one_ped$FID == input$FamilyIDtype, ]
-    validate(
+    shiny::validate(
       need(nrow(one_ped) > 0, "Please type a valid family ID")
     )
     return(one_ped)
@@ -93,14 +96,14 @@ server <- function(input, output, session) {
     req(path$loc)
     #req(input$FamilyID)
     fileinfer <- paste(path$loc, ".seg", sep = "")
-    validate(
+    shiny::validate(
       need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
     )
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
     kindf <- kindf[kindf$InfType!="UN", ]
     #kindf <- kindf[kindf$FID1 == input$FamilyID | kindf$FID2 == input$FamilyID, ]
-    validate(
+    shiny::validate(
       need(nrow(kindf) > 0, "No related samples")
     )
     return(kindf)
@@ -110,14 +113,14 @@ server <- function(input, output, session) {
     req(path$loc)
     #req(input$FamilyIDtype)
     fileinfer <- paste(path$loc, ".seg", sep = "")
-    validate(
+    shiny::validate(
       need(file.exists(fileinfer), paste0(prefix$name, ".seg", " is missing"))
     )
     kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
     kindf <- kindf[kindf$InfType!="UN", ]
     #kindf <- kindf[kindf$FID1 == input$FamilyIDtype | kindf$FID2 == input$FamilyIDtype, ]
-    validate(
+    shiny::validate(
       need(nrow(kindf) > 0, "No related samples")
     )
     return(kindf)
@@ -127,7 +130,7 @@ server <- function(input, output, session) {
   allseg_df <- reactive({
     req(path$loc)
     fileallseg <- paste0(path$loc,"allsegs.txt")
-    validate(need(file.exists(fileallseg), paste0(prefix$name, "allsegs.txt is missing")))
+    shiny::validate(need(file.exists(fileallseg), paste0(prefix$name, "allsegs.txt is missing")))
     allseg <- read.table(fileallseg, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     all_seg <- allseg[allseg$Chr <= 22, ]
@@ -137,7 +140,7 @@ server <- function(input, output, session) {
   segments_df <- reactive({
     req(path$loc)
     fileibdseg <- paste(path$loc, ".segments.gz", sep = "")
-    validate(
+    shiny::validate(
       need(file.exists(fileibdseg), paste0(prefix$name, ".segments.gz is missing"))
     )
     ibdseg <- fread(fileibdseg, header=F, data.table=F)
@@ -389,8 +392,6 @@ server <- function(input, output, session) {
     ID.index.dist <- cbind(fam.sub.inf.ID, loc.index, dist.comb)
     ID.range <- ID.index.dist[loc.index==1,]
     selected.pair <- ID.range[which.min(ID.range[,4]),c(1,2)]
-    
-    # shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
     shiny::validate(need(nrow(selected.pair) >0, "No close relatedness(up to 3rd degree) information. Please click a related pair"))
     ID1 <- selected.pair[1,1]
     ID2 <- selected.pair[1,2]
@@ -618,3 +619,4 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
+

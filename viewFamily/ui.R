@@ -3,6 +3,7 @@ ui <- fluidPage(
   sidebarLayout(position = "left", 
                 sidebarPanel(id = "sidebar", strong("Step 1: Please prepare KING ibdseg output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.seg file"),
+                             textOutput("text"),
                              textInput(inputId = "FamilyIDtype", label = "Step 2: Please type ID for the family to be visualized", value = NULL),
                              selectizeInput("FamilySize", "Or Step 2b: Please specify the family size", choices =c(Choose='')),
                              conditionalPanel(
