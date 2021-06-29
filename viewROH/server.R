@@ -73,7 +73,7 @@ server <- function(input, output, session) {
                       )
     )
     if (input$FID!= "All") {
-      updateSelectizeInput(session, "ID", label = paste("Sample ID in", input$FID, "to be visualized"),
+      updateSelectizeInput(session, "ID", label = paste("Sample ID in Family", input$FID, "to be visualized"),
                            choices = c(Choose='', rohinfo$ID), selected = NULL)
     } 
     return(rohinfo)
