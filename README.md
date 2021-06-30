@@ -5,8 +5,8 @@ This repository is for the interactive plots from KING.<br/> We use HapMap (http
 | Name  | Required R packages |
 | ------------- | ------------- |
 | viewROH  | 'shiny', 'ggplot2'  |
-| viewIBD  | 'shiny', 'ggplot2' and 'data.table'|
-| viewFamily  | 'shiny', 'ggplot2', 'data.table', 'kinship2' and 'igraph' |
+| viewIBD  | 'shiny', 'ggplot2' and 'data.table', 'R.utils'|
+| viewFamily  | 'shiny', 'ggplot2', 'data.table', 'kinship2' and 'igraph', 'R.utils' |
 
 
 ## Interactive plots for ROH
