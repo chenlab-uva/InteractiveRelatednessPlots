@@ -84,7 +84,7 @@ server <- function(input, output, session) {
     infer_df_FID <- infer_df()
     infer_df_FID <- infer_df_FID[infer_df_FID$FID1 == input$FID | infer_df_FID$FID2 == input$FID, ]
     related_pairs <- paste(infer_df_FID$ID1, infer_df_FID$ID2, sep=" & ")
-    new.label <- paste("All inferred relatives in", input$FID)
+    new.label <- paste("All inferred relatives in family", input$FID)
     if (input$FID=="All") {
       updateSelectizeInput(session, "IDs", label = "All inferred relatives", choices = c(Choose=''), selected = NULL)
     } else {
