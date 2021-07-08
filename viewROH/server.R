@@ -16,7 +16,7 @@ server <- function(input, output, session) {
     file.prefix <- gsub(".roh","", file.base)
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
-    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: Please type a family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
     output$text <- renderText({
       paste(file.base, "is ready to load")
     })
@@ -26,8 +26,8 @@ server <- function(input, output, session) {
   observeEvent(input$SelectAll,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
-    updateSelectizeInput(session, "ID", label = "Sample ID", choices = c(Choose=''))
+    updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
+    #updateSelectizeInput(session, "ID", label = "Optional Step 4: Please select from the following list of samples", choices = c(Choose=''))
   })
   
   
@@ -73,7 +73,7 @@ server <- function(input, output, session) {
                       )
     )
     if (input$FID!= "All") {
-      updateSelectizeInput(session, "ID", label = paste("Sample ID in family", input$FID, "to be visualized"),
+      updateSelectizeInput(session, "ID", label = paste("Optional Step 4: Please select from the following list of samples in", input$FID),
                            choices = c(Choose='', rohinfo$ID), selected = NULL)
     } 
     return(rohinfo)
@@ -145,7 +145,7 @@ server <- function(input, output, session) {
       geom_rect(data = k, aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9), fill = "red") +
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) +
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
-      labs(x = "Position (Mb)", y = "", title = bquote(paste('Run of Homozygosity for ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
+      labs(x = "Position (Mb)", y = "", title = bquote(paste('ROH for ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
       theme(legend.position = "none",
             panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -197,7 +197,7 @@ server <- function(input, output, session) {
       geom_rect(data = k, aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9), fill = "red") +
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) +
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
-      labs(x = "Position (Mb)", y = "", title = bquote(paste('Run of Homozygosity for ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
+      labs(x = "Position (Mb)", y = "", title = bquote(paste('ROH ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
       theme(legend.position = "none",
             panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),

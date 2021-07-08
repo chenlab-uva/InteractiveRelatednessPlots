@@ -4,7 +4,8 @@ ui <- fluidPage(
                 sidebarPanel(id = "sidebar", strong("Step 1: Please prepare KING roh output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.roh file"),
                              textOutput("text"),
-                             textInput(inputId = "FID", label = "Optional Step 2: please type a family ID, click the button, or skip this step", value = "All"),
+                             h5(strong("")),
+                             textInput(inputId = "FID", label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "SelectAll", label = "Select all samples"),
                              h5(strong("Step 3")),
                              actionButton(inputId = "EnterFID", label = "Generate interactive plots"),
@@ -13,7 +14,7 @@ ui <- fluidPage(
                              sliderInput("F_ROH_X_Range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
                              conditionalPanel(
                                condition = "input.FID!= 'All' && input.FID.length >0 ",
-                               selectizeInput("ID", "Sample ID",choices =c(Choose=''))
+                               selectizeInput("ID", "Optional Step 4: Please select from the following list of samples",choices =c(Choose=''))
                              ),
                              width = 2
                 ),
@@ -29,7 +30,7 @@ ui <- fluidPage(
                                          dataTableOutput(outputId = "dt1")
                                        )
                               ),
-                              tabPanel(title = "ROH for Selected Study Sample", value = "panel2",
+                              tabPanel(title = "Plot for optional step 4", value = "panel2",
                                        plotOutput("plot3",height = "600px", width = "80%"),
                                        dataTableOutput(outputId = "dt2")
                               )

@@ -16,7 +16,7 @@ server <- function(input, output, session) {
     prefix$name <- file.prefix
     path$pth <- paste(file.dir, file.prefix, sep = "/")
     updateTextInput(session, inputId = "FID", 
-                    label = paste("Optional Step 2: please type a Family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
+                    label = paste("Optional Step 2: Please type a family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
     output$text <- renderText({
       paste(file.base, "is ready to load")
     })
@@ -25,8 +25,8 @@ server <- function(input, output, session) {
   observeEvent(input$AllFID,{
     req(path$pth)
     req(prefix$name)
-    updateTextInput(session, "FID", label = paste("Optional Step 2: please type a Family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
-    updateSelectizeInput(session, "IDs", "All inferred relatives", choices =c(Choose=''))
+    updateTextInput(session, "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
+    updateSelectizeInput(session, "IDs", "Optional Step 4b: Please select from all inferred relatives", choices =c(Choose=''))
   })
   
   #
@@ -84,10 +84,8 @@ server <- function(input, output, session) {
     infer_df_FID <- infer_df()
     infer_df_FID <- infer_df_FID[infer_df_FID$FID1 == input$FID | infer_df_FID$FID2 == input$FID, ]
     related_pairs <- paste(infer_df_FID$ID1, infer_df_FID$ID2, sep=" & ")
-    new.label <- paste("All inferred relatives in family", input$FID)
-    if (input$FID=="All") {
-      updateSelectizeInput(session, "IDs", label = "All inferred relatives", choices = c(Choose=''), selected = NULL)
-    } else {
+    new.label <- paste("Optional Step 4: Please select from all inferred relatives in", input$FID)
+    if (input$FID!="All") {
       updateSelectizeInput(session, "IDs", label = new.label, choices = c(Choose='', related_pairs), selected = NULL)
     }
   })
@@ -257,4 +255,3 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
-

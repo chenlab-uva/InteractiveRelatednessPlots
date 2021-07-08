@@ -6,6 +6,7 @@ ui <- fluidPage(
                              strong("Step 1: Please prepare KING ibdseg output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.seg file"),
                              textOutput("text"),
+                             h5(strong("")),
                              textInput(inputId = "FID",label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "AllFID", label = "Select all samples"), 
                              h5(strong("Step 3")),
@@ -15,7 +16,7 @@ ui <- fluidPage(
                              sliderInput("IBD2Seg", "IBD2Seg_Range:", min = 0, max = 1,value = c(0,1)),
                              conditionalPanel(
                                condition = "input.FID!= 'All' && input.FID.length >0 ",
-                               selectizeInput("IDs", "All inferred relatives",choices =c(Choose=''))
+                               selectizeInput("IDs", "Optional Step 4: Please select from all inferred relatives",choices =c(Choose=''))
                                
                              ),
                              width = 2
@@ -32,7 +33,7 @@ ui <- fluidPage(
                                          dataTableOutput(outputId = "dt1")
                                        )
                               ),
-                              tabPanel("IBD Segments for the Selected Pair", value = "panel2",
+                              tabPanel("Plot for optional step 4", value = "panel2",
                                        plotOutput("plot3",height = "600px", width = "80%"),
                                        dataTableOutput(outputId = "dt2")
                               )
