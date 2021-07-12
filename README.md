@@ -42,6 +42,8 @@ Example output
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_4.png" width="854" height="480">
+
 
 
 ## Interactive plots for IBD Segments
@@ -60,9 +62,12 @@ runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_4.png" width="854" height="480">
+
+
 
 
 ## Visualization of Families
@@ -80,7 +85,7 @@ library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewFamily")
 ```
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewFamily1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewFamily2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewFamily3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
 
