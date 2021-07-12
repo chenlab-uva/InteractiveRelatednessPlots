@@ -4,8 +4,8 @@ ui <- fluidPage(
                 sidebarPanel(id = "sidebar", strong("Step 1: Please prepare KING ibdseg output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.seg file"),
                              textOutput("text"),
-                             h5(strong("")),
-                             textInput(inputId = "FamilyIDtype", label = "Step 2: Please type ID for the family to be visualized", value = NULL),
+                             h5(""),
+                             textInput(inputId = "FamilyIDtype", label = "Step 2: Please type an ID for the family to be visualized", value = NULL),
                              selectizeInput("FamilySize", "Or Step 2b: Please specify the family size", choices =c(Choose='')),
                              conditionalPanel(
                                condition = "input.FamilySize > 0",
@@ -16,7 +16,7 @@ ui <- fluidPage(
                 ),
                 mainPanel(
                   tabsetPanel(id = "inTabset",
-                              tabPanel("Plot for step 2", value = "panel1",
+                              tabPanel("Plot for Step 2", value = "panel1",
                                        fluidRow(
                                          column(6,plotOutput('plot1')),
                                          column(6,plotOutput('plot2',click = "plot_click_main"))
@@ -27,7 +27,7 @@ ui <- fluidPage(
                                        
                                        
                               ),
-                              tabPanel("Plot for step 2b", value = "panel2",
+                              tabPanel("Plot for Step 2b", value = "panel2",
                                        fluidRow(
                                          column(6,plotOutput('plot4')),
                                          column(6,plotOutput('plot5',click = "plot_click"))

@@ -1,14 +1,14 @@
 ui <- fluidPage(
-  
-  titlePanel(("Interface for Interactive Plot of Identical-By-Descent Segments")),
+  titlePanel(("Interface for Interactive Plot of Individual Level Relatedness")),
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
                              strong("Step 1: Please prepare KING ibdseg output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.seg file"),
                              textOutput("text"),
-                             h5(strong("")),
+                             h5(""),
                              textInput(inputId = "FID",label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "AllFID", label = "Select all samples"), 
+                             h1(""),
                              h5(strong("Step 3")),
                              actionButton(inputId = "EnterFID", label = "Generate interactive plots"),
                              h5(strong("Additional options")),
@@ -16,7 +16,7 @@ ui <- fluidPage(
                              sliderInput("IBD2Seg", "IBD2Seg_Range:", min = 0, max = 1,value = c(0,1)),
                              conditionalPanel(
                                condition = "input.FID!= 'All' && input.FID.length >0 ",
-                               selectizeInput("IDs", "Optional Step 4: Please select from all inferred relatives",choices =c(Choose=''))
+                               selectizeInput("IDs", "Optional Step 4: Please select from the following list of all inferred relatives", choices =c(Choose=''))
                                
                              ),
                              width = 2
@@ -33,7 +33,7 @@ ui <- fluidPage(
                                          dataTableOutput(outputId = "dt1")
                                        )
                               ),
-                              tabPanel("Plot for optional step 4", value = "panel2",
+                              tabPanel("Plot for Optional Step 4", value = "panel2",
                                        plotOutput("plot3",height = "600px", width = "80%"),
                                        dataTableOutput(outputId = "dt2")
                               )

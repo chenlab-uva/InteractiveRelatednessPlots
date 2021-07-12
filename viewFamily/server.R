@@ -31,7 +31,7 @@ server <- function(input, output, session) {
     family.size.df <- as.data.frame(table(peddf$FID))
     family.size.val <- unique(family.size.df$Freq)
     family.size.order <- family.size.val[order(family.size.val, decreasing = T)]
-    updateTextInput(session, "FamilyIDtype", paste("Step 2: Please type ID for the family to be visualized in", file.prefix, "data"), value = NULL)
+    updateTextInput(session, "FamilyIDtype", paste("Step 2: Please type an ID for the family to be visualized in", file.prefix, "data"), value = NULL)
     updateSelectizeInput(session, "FamilySize", paste("Or Step 2b: Please specify the family size in", file.prefix, "data"), choices = c(Choose='', family.size.order), selected = NULL)
   })
   
@@ -173,7 +173,7 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
-
+    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -215,7 +215,7 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
-
+    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -268,7 +268,6 @@ server <- function(input, output, session) {
     f <- input$FamilyIDtype
     data <- kin_infer_main()
     
-    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -308,7 +307,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Display with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Relatedness Display with Clickable Lines"), side = 3, line = -2, outer = TRUE)
   })
   
   output$plot3 <- renderPlot({
@@ -317,7 +316,6 @@ server <- function(input, output, session) {
     req(segments_df())
     f <- input$FamilyIDtype
     data <- kin_infer_main()
-    
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -334,6 +332,7 @@ server <- function(input, output, session) {
       }
       all.other.pairs <- as.data.frame(all.other.pairs)
       colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
       data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
       data <- rbind(data.f, data.f.other)
     } else{
@@ -443,7 +442,7 @@ server <- function(input, output, session) {
     coords_value <- coords_info()
     f <- input$FamilyID
     data <- kin_infer()
-    
+
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     
@@ -468,8 +467,6 @@ server <- function(input, output, session) {
       data <- data.f
     }
 
-    
-    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -488,7 +485,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Relatedness Display with Clickable Lines"), side = 3, line = -2, outer = TRUE)
     
   })
   
@@ -498,7 +495,7 @@ server <- function(input, output, session) {
     req(segments_df())
     f <- input$FamilyID
     data <- kin_infer()
-    
+
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -599,4 +596,3 @@ server <- function(input, output, session) {
     stopApp()
   })
 }
-

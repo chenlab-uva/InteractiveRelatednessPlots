@@ -27,7 +27,6 @@ server <- function(input, output, session) {
     req(path$pth)
     req(prefix$name)
     updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
-    #updateSelectizeInput(session, "ID", label = "Optional Step 4: Please select from the following list of samples", choices = c(Choose=''))
   })
   
   
@@ -73,7 +72,7 @@ server <- function(input, output, session) {
                       )
     )
     if (input$FID!= "All") {
-      updateSelectizeInput(session, "ID", label = paste("Optional Step 4: Please select from the following list of samples in", input$FID),
+      updateSelectizeInput(session, "ID", label = paste("Optional Step 4: Please select from the following list of samples in family", input$FID),
                            choices = c(Choose='', rohinfo$ID), selected = NULL)
     } 
     return(rohinfo)
@@ -138,7 +137,6 @@ server <- function(input, output, session) {
     f_roh <- roh_info[roh_info$FID==nameFID & roh_info$ID==nameID,"F_ROH"]
     fid <- k[1,1]
     id <- k[1,2]
-    #prefix <- filename()
     prefix <- prefix$name
     g <- ggplot() +
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) +

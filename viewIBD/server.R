@@ -26,10 +26,9 @@ server <- function(input, output, session) {
     req(path$pth)
     req(prefix$name)
     updateTextInput(session, "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
-    updateSelectizeInput(session, "IDs", "Optional Step 4b: Please select from all inferred relatives", choices =c(Choose=''))
+    updateSelectizeInput(session, "IDs", "Optional Step 4b: Please select from the following list of all inferred relatives", choices =c(Choose=''))
   })
   
-  #
   observeEvent(input$EnterFID, {
     updateTabsetPanel(session, "inTabset", selected = "panel1")
   })
@@ -78,13 +77,11 @@ server <- function(input, output, session) {
     return(allseg)
   })
   
-  
-  
   observeEvent(input$EnterFID, {
     infer_df_FID <- infer_df()
     infer_df_FID <- infer_df_FID[infer_df_FID$FID1 == input$FID | infer_df_FID$FID2 == input$FID, ]
     related_pairs <- paste(infer_df_FID$ID1, infer_df_FID$ID2, sep=" & ")
-    new.label <- paste("Optional Step 4: Please select from all inferred relatives in", input$FID)
+    new.label <- paste("Optional Step 4: Please select from the following list of all inferred relatives in family", input$FID)
     if (input$FID!="All") {
       updateSelectizeInput(session, "IDs", label = new.label, choices = c(Choose='', related_pairs), selected = NULL)
     }
@@ -92,7 +89,6 @@ server <- function(input, output, session) {
   
   output$plot1 <- renderPlot({
     req(infer_df())
-    #
     req(segments_df())
     req(all_seg_df())
     prefix <- prefix$name
@@ -153,7 +149,6 @@ server <- function(input, output, session) {
     )
     Prop.IBD1 <- formatC(individuals_all[point.index, "IBD1Seg"], digits = 3, format = "f")
     Prop.IBD2 <- formatC(individuals_all[point.index, "IBD2Seg"], digits = 3, format = "f")
-    #
     theme_set(theme_bw(base_size = 14))
     g <- ggplot() +
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), fill = 'white', color = "black", size = 0.85) + 
@@ -196,15 +191,12 @@ server <- function(input, output, session) {
   output$plot3 <- renderPlot({
     req(input$FID)
     req(input$IDs)
-    #req(infer_df())
-    #req(all_seg_df())
     individuals_all <- infer_df()
     all_seg <- all_seg_df()
     all_seg_gz <- segments_df()
     pairs <- input$IDs
     pair1 <- unlist(strsplit(pairs, " & " ))[1]
     pair2 <- unlist(strsplit(pairs, " & "))[2]
-    #target.data <- input_target()
     target.data <- all_seg_gz[(all_seg_gz$ID1==pair1 & all_seg_gz$ID2==pair2) | (all_seg_gz$ID2==pair1 & all_seg_gz$ID1==pair2), ]
     shiny::validate(
       need(nrow(target.data) > 0, "Please select a related pair")
