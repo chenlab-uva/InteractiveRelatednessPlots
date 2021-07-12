@@ -8,6 +8,10 @@ Then use unzip to unzip the zipped file.
 ```{bash}
 unzip HapMap.zip 
 ```
+Or we can clicking the Dropbox link, and then click the download button at the top right corner to download files. And then use unzip to unzip the zipped file.
+```{bash}
+unzip HapMap.zip 
+```
 
 Related KING output files are saved at HapMap folder.
 
