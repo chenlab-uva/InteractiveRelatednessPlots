@@ -8,14 +8,12 @@ ui <- fluidPage(
                              textInput(inputId = "FID", label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "SelectAll", label = "Select all samples"),
                              h5(""),
-                             h5(strong("Step 3")),
-                             actionButton(inputId = "EnterFID", label = "Generate interactive plots"),
                              h5(strong("Additional options")),
                              sliderInput("F_ROH_Range", "F_ROH_Range:", min = 0, max = 1,value = c(0,1)),
                              sliderInput("F_ROH_X_Range", "F_ROH_X_Range:",min = 0, max = 1,value = c(0,1)),
                              conditionalPanel(
                                condition = "input.FID!= 'All' && input.FID.length >0 ",
-                               selectizeInput("ID", "Optional Step 4: Please select from the following list of samples",choices =c(Choose=''))
+                               selectizeInput("ID", "Optional Step 3: Please select from the following list of samples",choices =c(Choose=''))
                              ),
                              width = 2
                 ),
@@ -31,7 +29,7 @@ ui <- fluidPage(
                                          dataTableOutput(outputId = "dt1")
                                        )
                               ),
-                              tabPanel(title = "Plot for Optional Step 4", value = "panel2",
+                              tabPanel(title = "Plot for Optional Step 3", value = "panel2",
                                        plotOutput("plot3",height = "600px", width = "80%"),
                                        dataTableOutput(outputId = "dt2")
                               )

@@ -1,7 +1,7 @@
 server <- function(input, output, session) {
   
   path <- reactiveValues(
-    pth=NULL
+    pth = NULL
   )
   
   prefix <- reactiveValues(
@@ -20,31 +20,36 @@ server <- function(input, output, session) {
     output$text <- renderText({
       paste(file.base, "is ready to load")
     })
+    updateTabsetPanel(session, "inTabset", selected = "panel1")
   })
   
   observeEvent(input$AllFID,{
     req(path$pth)
     req(prefix$name)
+    updateTabsetPanel(session, "inTabset", selected = "panel1")
     updateTextInput(session, "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
-    updateSelectizeInput(session, "IDs", "Optional Step 4b: Please select from the following list of all inferred relatives", choices =c(Choose=''))
+    updateSelectizeInput(session, "IDs", "Optional Step 3b: Please select from the following list of all inferred relatives", choices =c(Choose=''))
   })
   
-  observeEvent(input$EnterFID, {
-    updateTabsetPanel(session, "inTabset", selected = "panel1")
-  })
+  
   
   observeEvent(input$IDs, {
     updateTabsetPanel(session, "inTabset", selected = "panel2")
   })
   
-  infer_df <- eventReactive(input$EnterFID, {
+  infer_df <- reactive({
     req(path$pth)
     req(input$FID)
-    if (input$FID == "All"){
-      infer_all <- read.table(paste0(path$pth, ".seg"), header = TRUE, stringsAsFactors = FALSE) } else {
-        infer_all <- read.table(paste0(path$pth, ".seg"), header = TRUE, stringsAsFactors = FALSE)
-        infer_all <- infer_all[infer_all$FID1 == input$FID | infer_all$FID2 == input$FID, ]
-      }
+    withProgress(message = 'Loading .seg file',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   if (input$FID == "All"){
+                     infer_all <- read.table(paste0(path$pth, ".seg"), header = TRUE, stringsAsFactors = FALSE) } else {
+                       infer_all <- read.table(paste0(path$pth, ".seg"), header = TRUE, stringsAsFactors = FALSE)
+                       infer_all <- infer_all[infer_all$FID1 == input$FID | infer_all$FID2 == input$FID, ]
+                     }
+                   
+                 })
     shiny::validate(
       need(nrow(infer_all) > 0, "Please type a valid Family ID")
     )
@@ -61,31 +66,45 @@ server <- function(input, output, session) {
     shiny::validate(
       need(file.exists(paste0(path$pth, ".segments.gz")), paste0(prefix$name, "segments.gz is missing"))
     )
-    ibdseg <- fread(paste0(path$pth, ".segments.gz"), header = F, data.table = F)
+    withProgress(message = 'Loading .segments.gz file.',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   ibdseg <- fread(paste0(path$pth, ".segments.gz"), header = F, data.table = F)
+                 })
     colnames(ibdseg) <- c("FID1","ID1","FID2","ID2","IBDType","Chr","StartMB",
                           "StopMB","StartSNP","StopSNP","N_SNP","Length")
     ibdseg <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
-    return(ibdseg)
+    return(ibdseg)  
   })
+  
   
   all_seg_df <- reactive({
     shiny::validate(
       need(file.exists(paste0(path$pth, "allsegs.txt")), paste0(prefix$name, "allsegs.txt is missing"))
     )
-    allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
+    
+    withProgress(message = 'Loading allsegs.txt file.',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
+                 })
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     return(allseg)
   })
   
-  observeEvent(input$EnterFID, {
+  observeEvent(input$FID, {
     infer_df_FID <- infer_df()
     infer_df_FID <- infer_df_FID[infer_df_FID$FID1 == input$FID | infer_df_FID$FID2 == input$FID, ]
     related_pairs <- paste(infer_df_FID$ID1, infer_df_FID$ID2, sep=" & ")
-    new.label <- paste("Optional Step 4: Please select from the following list of all inferred relatives in family", input$FID)
+    new.label <- paste("Optional Step 3: Please select from the following list of all inferred relatives in family", input$FID)
     if (input$FID!="All") {
       updateSelectizeInput(session, "IDs", label = new.label, choices = c(Choose='', related_pairs), selected = NULL)
     }
   })
+  
+  
+  
+  
   
   output$plot1 <- renderPlot({
     req(infer_df())
@@ -189,7 +208,7 @@ server <- function(input, output, session) {
   })
   
   output$plot3 <- renderPlot({
-    req(input$FID)
+    #req(input$FID)
     req(input$IDs)
     individuals_all <- infer_df()
     all_seg <- all_seg_df()

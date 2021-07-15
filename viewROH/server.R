@@ -20,12 +20,13 @@ server <- function(input, output, session) {
     output$text <- renderText({
       paste(file.base, "is ready to load")
     })
-    
+    updateTabsetPanel(session, "inTabset", selected = "panel1")
   })
   
   observeEvent(input$SelectAll,{
     req(path$pth)
     req(prefix$name)
+    updateTabsetPanel(session, "inTabset", selected = "panel1")
     updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: Please type a family ID in", prefix$name, "data, click the button, or skip this step"), value = "All")
   })
   
@@ -34,16 +35,15 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "inTabset", selected = "panel2")
   })
   
-  observeEvent(input$EnterFID, {
-    updateTabsetPanel(session, "inTabset", selected = "panel1")
-  })
   
-  
-  
-  roh_info_df <- eventReactive(input$EnterFID, {
+  roh_info_df <- reactive({
     req(path$pth)
     req(input$FID)
-    roh <- read.table(paste0(path$pth,".roh"), header = TRUE, stringsAsFactors = FALSE)
+    withProgress(message = 'Loading .roh file',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   roh <- read.table(paste0(path$pth,".roh"), header = TRUE, stringsAsFactors = FALSE)
+                 })
     if (input$FID != "All")  roh <- roh[roh$FID == input$FID, ]
     shiny::validate(
       need(nrow(roh) > 0, "please type a valid Family ID")
@@ -72,7 +72,7 @@ server <- function(input, output, session) {
                       )
     )
     if (input$FID!= "All") {
-      updateSelectizeInput(session, "ID", label = paste("Optional Step 4: Please select from the following list of samples in family", input$FID),
+      updateSelectizeInput(session, "ID", label = paste("Optional Step 3: Please select from the following list of samples in family", input$FID),
                            choices = c(Choose='', rohinfo$ID), selected = NULL)
     } 
     return(rohinfo)
@@ -83,7 +83,12 @@ server <- function(input, output, session) {
     shiny::validate(
       need(file.exists(paste0(path$pth, ".rohseg.gz")), paste0(path$pth, ".rohseg.gz is missing"))
     )
-    rohseg <- read.table(paste0(path$pth, ".rohseg.gz"), header = TRUE, stringsAsFactors = FALSE)
+    
+    withProgress(message = 'Loading .rohseg.gz file',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   rohseg <- read.table(paste0(path$pth, ".rohseg.gz"), header = TRUE, stringsAsFactors = FALSE)
+                 })
     rohseg <- rohseg[, c("FID", "ID", "Chr", "StartMB", "StopMB")]
     return(rohseg)
   })
@@ -93,13 +98,17 @@ server <- function(input, output, session) {
     shiny::validate(
       need(file.exists(paste0(path$pth, "allsegs.txt")), paste0(path$pth, "allsegs.txt is missing"))
     )
-    allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
+    withProgress(message = 'Loading allsegs.txt file',
+                 detail = 'This may take a while...', value = 0, {
+                   incProgress(1/1)
+                   allseg <- read.table(paste0(path$pth, "allsegs.txt"), header = TRUE)
+                 })
+    
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     return(allseg)
   })
   
   output$plot1 <- renderPlot({
-    req(input$EnterFID)
     req(roh_info_df())
     req(segments_df())
     req(all_seg_df())
@@ -117,7 +126,6 @@ server <- function(input, output, session) {
   })
   
   output$plot2 <- renderPlot({
-    req(input$EnterFID)
     req(input$plot_click)
     roh_info <- roh_info_df()
     segments <- segments_df()
@@ -153,7 +161,6 @@ server <- function(input, output, session) {
   
   
   output$dt1 <- renderDataTable({
-    req(input$EnterFID)
     req(roh_info_df())
     req(segments_df())
     req(all_seg_df())
@@ -178,7 +185,6 @@ server <- function(input, output, session) {
   
   
   output$plot3 <- renderPlot({
-    req(input$EnterFID)
     req(input$ID)
     roh_info <- roh_info_df()
     all_seg <- all_seg_df()
@@ -217,3 +223,4 @@ server <- function(input, output, session) {
   })
   
 }
+
