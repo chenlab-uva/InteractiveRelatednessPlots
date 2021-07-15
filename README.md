@@ -60,7 +60,6 @@ library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
 Example output
-
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
