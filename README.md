@@ -42,7 +42,6 @@ Example output
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_3.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_4.png" width="854" height="480">
 
 
 
@@ -65,7 +64,6 @@ Example output
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_4.png" width="854" height="480">
 
 
 
