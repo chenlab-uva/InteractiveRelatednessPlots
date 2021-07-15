@@ -31,7 +31,7 @@ Run KING to get the required three files. They are *.roh, *.rohseg.gz and *allse
 king -b hapmap.bed --roh --prefix hapmap
 ```
 
-Run the following R code in R to get interactive plots. Package 'shiny' and 'ggplot2' are required. Related R files are saved at ROH folder. <br/> 
+Run the following R code in R to get interactive plots. Package 'shiny' and 'ggplot2' are required. Related R files are saved at viewROH folder. <br/> 
 
 ```{bash}
 library(shiny)
@@ -53,13 +53,14 @@ Run KING to get the required three files. They are *.seg, *.segments.gz and *all
 king -b hapmap.bed --ibdseg --prefix hapmap
 ```
 
-Run the following R code in R to get interactive plots. Package 'shiny', 'data.table' and 'ggplot2' are required. Related R files are saved at IBDSeg folder. <br/> 
+Run the following R code in R to get interactive plots. Package 'shiny', 'data.table' and 'ggplot2' are required. Related R files are saved at viewIBD folder. <br/> 
 
 ```{bash}
 library(shiny)
 runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
 Example output
+
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
@@ -69,7 +70,7 @@ Example output
 
 ## Visualization of Families
 
-Run KING to get the required four files. They are *.seg, *.segments.gz, *allsegs.txt and *splitped.txt.
+Run KING to get the required four files. They are *.seg, *.segments.gz, *allsegs.txt and *splitped.txt. Related R files are saved at viewFamily folder. <br/> 
 
 ```{bash}
 king -b hapmap.bed --ibdseg --prefix hapmap
