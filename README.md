@@ -1,5 +1,6 @@
 # Interactive Visualization of Relatedness from KING
 This repository is for the interactive plots from KING. We use HapMap (https://www.dropbox.com/s/3dgjlmdc9b1tigq/HapMap.zip?dl=0) as the example dataset.<br/>
+
 Use curl to download the example dataset.
 ```{bash}
 curl https://www.dropbox.com/s/3dgjlmdc9b1tigq/HapMap.zip?dl=0 -O -J -L
