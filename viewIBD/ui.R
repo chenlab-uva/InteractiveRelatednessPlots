@@ -1,5 +1,5 @@
 ui <- fluidPage(
-  titlePanel(("Interface for Interactive Plot of Individual Level Relatedness")),
+  titlePanel(("Interface for Interactive Plot of Individual-Level Relatedness")),
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar",
                              strong("Step 1: Please prepare KING ibdseg output files and then"),
