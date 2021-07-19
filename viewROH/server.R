@@ -121,7 +121,7 @@ server <- function(input, output, session) {
     )
     ylab.title <- ifelse("tmp_F_ROH_X" %in% colnames(target.data), "F_ROH_X (Randomly Generated)",
                          "F_ROH_X")
-    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab= ylab.title, main = paste0("F_ROH_X vs F_ROH in ", prefix),
+    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab= ylab.title, main = paste0("Interactive Display of ROH in ", prefix, " with Clickable Dots"),
          cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
   })
   
