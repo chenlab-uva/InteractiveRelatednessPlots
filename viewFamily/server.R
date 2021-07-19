@@ -21,7 +21,7 @@ server <- function(input, output, session) {
     file.base <- basename(fullpath)
     file.dir <- dirname(fullpath)
     output$text <- renderText({
-      paste(file.base, "is ready to load")
+      paste(file.base, "is loaded")
     })
     file.prefix <- gsub(".seg","", file.base)
     prefix$name <- file.prefix
@@ -65,7 +65,6 @@ server <- function(input, output, session) {
                    peddf <- read.table(splitpedfile, stringsAsFactors = FALSE)[,c(1,2,5,6,7,8,9)]
                  })
     
-    #peddf <- read.table(splitpedfile, stringsAsFactors = FALSE)[,c(1,2,5,6,7,8,9)]
     colnames(peddf) <- c("FID", "ID", "FA", "MO", "Sex", "Affected", "Status")
     peddf$Affected[peddf$Affected==-9 | peddf$Affected==0 | peddf$Affected==1] <- 0
     peddf$Affected[peddf$Affected==2] <- 1
@@ -131,7 +130,6 @@ server <- function(input, output, session) {
                    kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
                  })
     
-    #kindf <- read.table(fileinfer, header = TRUE, stringsAsFactors = FALSE)
     kindf <- kindf[, c("FID1","ID1", "FID2", "ID2","IBD1Seg", "IBD2Seg","InfType")]
     kindf <- kindf[kindf$InfType!="UN", ]
     shiny::validate(
@@ -150,7 +148,6 @@ server <- function(input, output, session) {
                    incProgress(1/1)
                    allseg <- read.table(fileallseg, header = TRUE)
                  })
-    #allseg <- read.table(fileallseg, header = TRUE)
     allseg <- allseg[, c("Chr", "StartMB","StopMB")]
     all_seg <- allseg[allseg$Chr <= 22, ]
     return(all_seg)
@@ -167,7 +164,6 @@ server <- function(input, output, session) {
                    incProgress(1/1)
                    ibdseg <- fread(fileibdseg, header=F, data.table=F)
                  })
-    #ibdseg <- fread(fileibdseg, header=F, data.table=F)
     colnames(ibdseg) <- c("FID1","ID1","FID2","ID2","IBDType", "Chr", "StartMB","StopMB","StartSNP","StopSNP","N_SNP","Length") 
     ibdseg <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
     return(ibdseg)
@@ -297,7 +293,6 @@ server <- function(input, output, session) {
     f <- input$FamilyIDtype
     data <- kin_infer_main()
     
-    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -319,7 +314,6 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
-    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -338,7 +332,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Relatedness Display with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
   })
   
   output$plot3 <- renderPlot({
@@ -348,7 +342,6 @@ server <- function(input, output, session) {
     f <- input$FamilyIDtype
     data <- kin_infer_main()
     
-    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -365,13 +358,11 @@ server <- function(input, output, session) {
       }
       all.other.pairs <- as.data.frame(all.other.pairs)
       colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
-      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
       data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
       data <- rbind(data.f, data.f.other)
     } else{
       data <- data.f
     }
-    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -476,8 +467,6 @@ server <- function(input, output, session) {
     coords_value <- coords_info()
     f <- input$FamilyID
     data <- kin_infer()
-    
-    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     
@@ -495,16 +484,11 @@ server <- function(input, output, session) {
       }
       all.other.pairs <- as.data.frame(all.other.pairs)
       colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
-      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
       data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
       data <- rbind(data.f, data.f.other)
     } else{
       data <- data.f
     }
-    # 06/24/2021
-    
-    
-    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -523,7 +507,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Relatedness Display with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
     
   })
   
@@ -533,8 +517,6 @@ server <- function(input, output, session) {
     req(segments_df())
     f <- input$FamilyID
     data <- kin_infer()
-    
-    # 06/24/2021
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -556,7 +538,6 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
-    # 06/24/2021
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -595,7 +576,6 @@ server <- function(input, output, session) {
     ID.range <- ID.index.dist[loc.index==1,]
     selected.pair <- ID.range[which.min(ID.range[,4]),c(1,2)]
     
-    #shiny::validate(need(nrow(selected.pair) >0, "No relatedness information. Please click a related pair"))
     shiny::validate(need(nrow(selected.pair) >0, "No close relatedness(up to 3rd degree) information. Please click a related pair"))
     
     ID1 <- selected.pair[1,1]

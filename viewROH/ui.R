@@ -3,7 +3,7 @@ ui <- fluidPage(
   sidebarLayout(position = "left",
                 sidebarPanel(id = "sidebar", strong("Step 1: Please prepare KING roh output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.roh file"),
-                             textOutput("text"),
+                             htmlOutput('text'),
                              h5(""),
                              textInput(inputId = "FID", label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "SelectAll", label = "Select all samples"),

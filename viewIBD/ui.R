@@ -4,7 +4,7 @@ ui <- fluidPage(
                 sidebarPanel(id = "sidebar",
                              strong("Step 1: Please prepare KING ibdseg output files and then"),
                              actionButton(inputId = "filechoose", label = "Choose *.seg file"),
-                             textOutput("text"),
+                             htmlOutput("text"),
                              h5(""),
                              textInput(inputId = "FID",label = "Optional Step 2: Please type a family ID, click the button, or skip this step", value = "All"),
                              actionButton(inputId = "AllFID", label = "Select all samples"), 

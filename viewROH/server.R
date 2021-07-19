@@ -18,7 +18,7 @@ server <- function(input, output, session) {
     path$pth <- paste(file.dir, file.prefix, sep = "/")
     updateTextInput(session, inputId = "FID", label = paste("Optional Step 2: Please type a family ID in", file.prefix, "data, click the button, or skip this step"), value = "All")
     output$text <- renderText({
-      paste(file.base, "is ready to load")
+      paste(file.base,"is loaded", "<br>", paste0(file.prefix, ".rohseg.gz"), "is loaded", "<br>", paste0(file.prefix, "allsegs.txt"), "is loaded.")
     })
     updateTabsetPanel(session, "inTabset", selected = "panel1")
   })
