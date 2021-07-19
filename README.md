@@ -36,13 +36,13 @@ Run the following R code in R to get interactive plots. Package 'shiny' and 'ggp
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewROH")
+runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewROH")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewROH/viewROH_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_3.png" width="854" height="480">
 
 
 
@@ -58,13 +58,13 @@ Run the following R code in R to get interactive plots. Package 'shiny', 'data.t
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
+runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
 Example output
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
 
 
 
@@ -81,10 +81,10 @@ Package 'shiny', 'kinship2', 'igraph', 'data.table' and 'ggplot2' are required.
 
 ```{bash}
 library(shiny)
-runGitHub("InteractivePlots", "chenlab-uva", ref = "main", subdir = "viewFamily")
+runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewFamily")
 ```
 
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
-<img src="https://github.com/chenlab-uva/InteractivePlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
 
