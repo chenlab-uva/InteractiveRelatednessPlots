@@ -129,7 +129,7 @@ server <- function(input, output, session) {
     plot(individuals_all$IBD1Seg[dU], individuals_all$IBD2Seg[dU], type="p", col = "black", cex.lab=1.2,
          xlim=c(min(individuals_all$IBD1Seg), max(individuals_all$IBD1Seg)),
          ylim=c(min(individuals_all$IBD2Seg), max(individuals_all$IBD2Seg)),
-         main = paste0("IBD Segments In Inferred ", prefix, " Relatives"),
+         main = paste0("Interactive Display of IBD Relatedness in ", prefix, " with Clickable Dots"),
          xlab=expression(paste("Length Proportion of IBD1 Segments (", pi[1], ")",sep="")),
          ylab=expression(paste("Length Proportion of IBD2 Segments (", pi[2], ")",sep="")))
     points(individuals_all$IBD1Seg[d0], individuals_all$IBD2Seg[d0], col="purple")
