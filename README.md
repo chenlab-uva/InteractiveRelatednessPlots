@@ -89,4 +89,6 @@ runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
+<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_4.png" width="854" height="480">
+
 
