@@ -71,8 +71,16 @@ runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "
 ```
 ### Example output <br/>
 
+After selecting the *.seg file from KING, we will see the shared IBD information, ploting length proportion of IBD2 segments against length proportion of IBD1 Segments.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
+
+We can see the detailed IBD sharing by clicking the dot from the interactive display of IBD relatedness plot.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
+
+Also, we can type a family ID that we are interested in, and then select a pair within that family to look into the details.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_3.png" width="854" height="480">
 
 
@@ -92,10 +100,22 @@ Package 'shiny', 'kinship2', 'igraph', 'data.table' and 'ggplot2' are required.
 library(shiny)
 runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewFamily")
 ```
+## Example output
+
+First, select the *.seg file from KING, and then type a Family ID to be visualized. We will see two plots with reported pedigree information and the inferred relatedness.
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
+
+We can explore the detailed IBD sharing by clicking the lines on the interactive display of relatedness plot.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
+
+Also, we can explore the family relatedness under a practical family size. And then choose a family of that family size.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
+
+Detailed IBD sharing will be displayed under these two plots by clicking the lines on the interactive inferred relatedness plot.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewFamily_4.png" width="854" height="480">
 
 
