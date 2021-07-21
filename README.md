@@ -40,10 +40,17 @@ Run the following R code in R to get interactive plots. Package 'shiny' and 'ggp
 library(shiny)
 runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewROH")
 ```
-Example output
+### Example output <br/>
+After selecting the *.roh file from KING, we will see each sample's F_ROH and F_ROH on X chromosome. 
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_1.png" width="854" height="480">
+
+We can explore each sample's detailed ROH information by clicking a dot on the interactive display plot.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_2.png" width="854" height="480">
+
+Also, we can type a family ID that we are interested in, and then select a sample within that family to look into the details.
+
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewROH/viewROH_3.png" width="854" height="480">
 
 
@@ -62,7 +69,7 @@ Run the following R code in R to get interactive plots. Package 'shiny', 'data.t
 library(shiny)
 runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "viewIBD")
 ```
-Example output
+### Example output <br/>
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
