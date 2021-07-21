@@ -102,7 +102,7 @@ runGitHub("InteractiveRelatednessPlots", "chenlab-uva", ref = "main", subdir = "
 ```
 ## Example output
 
-First, select the *.seg file from KING, and then type a Family ID to be visualized. We will see two plots with reported pedigree information and the inferred relatedness.
+First, select the *.seg file from KING, and then type a family ID to be visualized. We will see two plots with reported pedigree information and the inferred relatedness.
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_1.png" width="854" height="480">
 
@@ -110,7 +110,7 @@ We can explore the detailed IBD sharing by clicking the lines on the interactive
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
 
-Also, we can explore the family relatedness under a practical family size. And then choose a family of that family size.
+Also, we can explore the family relatedness under a particular family size. And then choose a family of that family size.
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
 
