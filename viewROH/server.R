@@ -108,11 +108,12 @@ server <- function(input, output, session) {
     return(allseg)
   })
   
+  
+  
   output$plot1 <- renderPlot({
     req(roh_info_df())
     req(segments_df())
     req(all_seg_df())
-    prefix <- prefix$name
     roh_info <- roh_info_df()
     target.data <- roh_info[roh_info$F_ROH >= input$F_ROH_Range[1] & roh_info$F_ROH <= input$F_ROH_Range[2] & 
                               roh_info$F_ROH_X >= input$F_ROH_X_Range[1] & roh_info$F_ROH_X <= input$F_ROH_X_Range[2],]
@@ -121,7 +122,7 @@ server <- function(input, output, session) {
     )
     ylab.title <- ifelse("tmp_F_ROH_X" %in% colnames(target.data), "F_ROH_X (Randomly Generated)",
                          "F_ROH_X")
-    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab= ylab.title, main = paste0("Interactive Display of ROH in ", prefix, " with Clickable Dots"),
+    plot(target.data$F_ROH, target.data$F_ROH_X, xlab = "F_ROH", ylab= ylab.title, main = "Interactive Display of ROH with Clickable Dots",
          cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
   })
   
@@ -201,7 +202,7 @@ server <- function(input, output, session) {
       geom_rect(data = k, aes(xmin = StartMB, xmax = StopMB, ymin = 0, ymax = 0.9), fill = "red") +
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) +
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
-      labs(x = "Position (Mb)", y = "", title = bquote(paste('ROH ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
+      labs(x = "Position (Mb)", y = "", title = bquote(paste('ROH for ', .(id), ' from FAM ', .(fid), ' in ', .(prefix), ' (F'['ROH']*' = ', .(f_roh), ')'))) +
       theme(legend.position = "none",
             panel.background = element_rect(fill = 'grey80', color = 'grey80'), panel.border = element_blank(),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -216,6 +217,7 @@ server <- function(input, output, session) {
     select_df  <- allrohgz[allrohgz$ID == input$ID, ]
     shiny::validate(need(nrow(select_df) > 0, "Please select a sample in the study dataset"))
     select_df
+    
   })
   
   session$onSessionEnded(function() {

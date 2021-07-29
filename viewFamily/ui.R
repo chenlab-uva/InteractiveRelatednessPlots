@@ -22,8 +22,9 @@ ui <- fluidPage(
                                          column(6,plotOutput('plot2',click = "plot_click_main"))
                                        ),
                                        fluidRow(
-                                         column(12, plotOutput('plot3', height="600px"))
-                                       )   
+                                         column(12, plotOutput('plot3', height="600px")),
+                                         column(12, dataTableOutput(outputId = "dt1"))
+                                       )
                                        
                                        
                               ),
@@ -33,7 +34,8 @@ ui <- fluidPage(
                                          column(6,plotOutput('plot5',click = "plot_click"))
                                        ),
                                        fluidRow(
-                                         column(12, plotOutput('plot6', height="600px"))
+                                         column(12, plotOutput('plot6', height="600px")),
+                                         column(12, dataTableOutput(outputId = "dt2"))
                                        )  
                               )
                               

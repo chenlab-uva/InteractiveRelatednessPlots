@@ -74,7 +74,7 @@ server <- function(input, output, session) {
                  })
     colnames(ibdseg) <- c("FID1","ID1","FID2","ID2","IBDType","Chr","StartMB",
                           "StopMB","StartSNP","StopSNP","N_SNP","Length")
-    ibdseg <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
+    ibdseg <- ibdseg[, c("FID1", "ID1", "FID2", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
     return(ibdseg)  
   })
   
@@ -111,7 +111,7 @@ server <- function(input, output, session) {
     req(infer_df())
     req(segments_df())
     req(all_seg_df())
-    prefix <- prefix$name
+    #prefix <- prefix$name
     individuals_all <- infer_df()
     individuals_all <- individuals_all[individuals_all$IBD1Seg >= input$IBD1Seg[1] & individuals_all$IBD1Seg <= input$IBD1Seg[2] & 
                                          individuals_all$IBD2Seg >= input$IBD2Seg[1] & individuals_all$IBD2Seg <= input$IBD2Seg[2],]
@@ -129,7 +129,7 @@ server <- function(input, output, session) {
     plot(individuals_all$IBD1Seg[dU], individuals_all$IBD2Seg[dU], type="p", col = "black", cex.lab=1.2,
          xlim=c(min(individuals_all$IBD1Seg), max(individuals_all$IBD1Seg)),
          ylim=c(min(individuals_all$IBD2Seg), max(individuals_all$IBD2Seg)),
-         main = paste0("Interactive Display of IBD Relatedness in ", prefix, " with Clickable Dots"),
+         main = "Interactive Display of IBD Relatedness with Clickable Dots",
          xlab=expression(paste("Length Proportion of IBD1 Segments (", pi[1], ")",sep="")),
          ylab=expression(paste("Length Proportion of IBD2 Segments (", pi[2], ")",sep="")))
     points(individuals_all$IBD1Seg[d0], individuals_all$IBD2Seg[d0], col="purple")
@@ -176,7 +176,7 @@ server <- function(input, output, session) {
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) +
-      labs(x = "Position (MB)", y = "", title=substitute(paste("IBD Segments between ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
+      labs(x = "Position (MB)", y = "", title=substitute(paste("IBD Segments for ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
                                                          list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2)))+
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
@@ -237,7 +237,7 @@ server <- function(input, output, session) {
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
-      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments between ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
+      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments for Relative Pair ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
                                                          list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2))) + 
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
@@ -260,6 +260,7 @@ server <- function(input, output, session) {
       need(nrow(select_df) > 0, "Please select a related pair")
     )
     select_df
+    
   })
   
   session$onSessionEnded(function() {

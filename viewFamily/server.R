@@ -64,7 +64,6 @@ server <- function(input, output, session) {
                    incProgress(1/1)
                    peddf <- read.table(splitpedfile, stringsAsFactors = FALSE)[,c(1,2,5,6,7,8,9)]
                  })
-    
     colnames(peddf) <- c("FID", "ID", "FA", "MO", "Sex", "Affected", "Status")
     peddf$Affected[peddf$Affected==-9 | peddf$Affected==0 | peddf$Affected==1] <- 0
     peddf$Affected[peddf$Affected==2] <- 1
@@ -165,7 +164,7 @@ server <- function(input, output, session) {
                    ibdseg <- fread(fileibdseg, header=F, data.table=F)
                  })
     colnames(ibdseg) <- c("FID1","ID1","FID2","ID2","IBDType", "Chr", "StartMB","StopMB","StartSNP","StopSNP","N_SNP","Length") 
-    ibdseg <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
+    ibdseg <- ibdseg[, c("FID1", "ID1", "FID2", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
     return(ibdseg)
   })
   
@@ -277,12 +276,13 @@ server <- function(input, output, session) {
       plot(g.empty, vertex.size=27, vertex.color=NA, vertex.label.cex=1, vertex.label.dist=1.6, vertex.label.degree= pi/2, 
            vertex.label.color="black", vertex.label= fam[,"ID"], edge.color=NA, layout=layout_with_fr(g.empty, grid="nogrid"), asp=0,
            vertex.shape=c("none", "square", "circle")[1+fam[,"Sex"]])
-      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f, "(Non-Interactive)"), side = 3, line = -2, outer = TRUE, cex = 1.2)
     } else {
       pedplot <- pedigree(id = fam$ID, dadid = fam$FA, momid = fam$MO, sex = as.numeric(fam$Sex),
                           affected = as.numeric(fam$Affected), status = as.numeric(fam$Status), famid = fam$FID, missid = 0)
+      #
       plot(pedplot[toString(f)], cex = 0.5, symbolsize = 2.8)
-      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f, "(Non-Interactive)"), side = 3, line = -2, outer = TRUE, cex = 1.2)
     }
   })
   output$plot2 <- renderPlot({
@@ -332,7 +332,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE, cex = 1.2)
   })
   
   output$plot3 <- renderPlot({
@@ -342,7 +342,7 @@ server <- function(input, output, session) {
     f <- input$FamilyIDtype
     data <- kin_infer_main()
     
-    data.f <- data[data$FID1 ==f | data$FID2 == f, ]
+    data.f <- data[data$FID1 ==f | data$FID2 == f, ] 
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
     
@@ -358,6 +358,7 @@ server <- function(input, output, session) {
       }
       all.other.pairs <- as.data.frame(all.other.pairs)
       colnames(all.other.pairs) <- c("FID1", "ID1", "FID2", "ID2")
+      #data.f.other <- merge(all.other.pairs, by.x = c("FID1", "ID1"), by.y = c("FID", "ID"))
       data.f.other <- merge(data, all.other.pairs, by= c("FID1", "ID1", "FID2", "ID2"))
       data <- rbind(data.f, data.f.other)
     } else{
@@ -408,7 +409,7 @@ server <- function(input, output, session) {
     all_seg <- allseg_df()
     individuals_all <- kin_infer_main()
     ibdseg <- segments_df()
-    segments <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
+    segments <- ibdseg[, c("FID1","ID1", "FID2", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
     target.data <- segments[(segments$ID1==ID1 & segments$ID2==ID2) | (segments$ID1==ID2 & segments$ID2==ID1) ,   ]
     
     shiny::validate(need(nrow(target.data) >0, "No related inforamtion. Please select another pair"))
@@ -424,7 +425,7 @@ server <- function(input, output, session) {
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
-      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments between ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
+      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments for Relative Pair ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
                                                          list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2))) + 
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
@@ -433,7 +434,9 @@ server <- function(input, output, session) {
         axis.text.y = element_blank(), axis.ticks.y = element_blank()
       )
     print(g)
-    
+    output$dt1 <- renderDataTable({
+      target.data
+    })
     
   })
   
@@ -451,12 +454,12 @@ server <- function(input, output, session) {
       plot(g.empty, vertex.size=27, vertex.color=NA, vertex.label.cex=1, vertex.label.dist=1.6, vertex.label.degree= pi/2, 
            vertex.label.color="black", vertex.label= fam[,"ID"], edge.color=NA, layout=layout_with_fr(g.empty, grid="nogrid"), asp=0,
            vertex.shape=c("none", "square", "circle")[1+fam[,"Sex"]])
-      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f, "(Non-Interactive)"), side = 3, line = -2, outer = TRUE)
     } else {
       pedplot <- pedigree(id = fam$ID, dadid = fam$FA, momid = fam$MO, sex = as.numeric(fam$Sex),
                           affected = as.numeric(fam$Affected), status = as.numeric(fam$Status), famid = fam$FID, missid = 0)
       plot(pedplot[toString(f)], cex = 0.5, symbolsize = 2.8)
-      mtext(paste("Reported Pedigree in Family", f), side = 3, line = -2, outer = TRUE)
+      mtext(paste("Reported Pedigree in Family", f, "(Non-Interactive)"), side = 3, line = -2, outer = TRUE, cex = 1.2)
     }
   })
   
@@ -467,6 +470,7 @@ server <- function(input, output, session) {
     coords_value <- coords_info()
     f <- input$FamilyID
     data <- kin_infer()
+    
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     
@@ -489,6 +493,9 @@ server <- function(input, output, session) {
     } else{
       data <- data.f
     }
+
+    
+    
     ped <- allped_df()
     Inf.color <- c("purple", "red", "green", "blue", "yellow", NA)
     Inf.type <- c("Dup/MZ", "PO", "FS", "2nd", "3rd")
@@ -507,7 +514,7 @@ server <- function(input, output, session) {
          edge.color=Inf.color[as.numeric(fam.sub$InfType)], layout=coords_value, asp=0,
          vertex.shape=c("none", "square", "circle")[1+as.numeric(id[, 2])], margin=c(0.3,0,0,0))
     legend("bottomright", Inf.type, lty=1, col=Inf.color, text.col=Inf.color, cex=0.7, bty="n")
-    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE)
+    mtext(paste("Interactive Display of Relatedness with Clickable Lines"), side = 3, line = -2, outer = TRUE, cex = 1.2)
     
   })
   
@@ -517,6 +524,7 @@ server <- function(input, output, session) {
     req(segments_df())
     f <- input$FamilyID
     data <- kin_infer()
+    
     data.f <- data[data$FID1 ==f | data$FID2 == f, ]
     shiny::validate(need(nrow(data.f) > 0, "All samples are unrelated. Please choose another family ID."))
     data.f.sample <- unique(mapply(c, data.f[, c("FID1", "ID1")], data.f[, c("FID2", "ID2")]))
@@ -584,7 +592,7 @@ server <- function(input, output, session) {
     all_seg <- allseg_df()
     individuals_all <- kin_infer()
     ibdseg <- segments_df()
-    segments <- ibdseg[, c("ID1", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
+    segments <- ibdseg[, c("FID1", "ID1", "FID2", "ID2", "IBDType", "Chr", "StartMB", "StopMB")]
     target.data <- segments[(segments$ID1==ID1 & segments$ID2==ID2) | (segments$ID1==ID2 & segments$ID2==ID1) ,   ]
     
     shiny::validate(need(nrow(target.data) >0, "No related inforamtion. Please select another pair"))
@@ -600,7 +608,7 @@ server <- function(input, output, session) {
       geom_rect(data = all_seg, aes(xmin = StartMB, xmax = StopMB, ymin = 0, max = 0.9), color = "black", alpha = 0, size = 0.85) + 
       scale_fill_manual(values = c("IBD0" = "white", "IBD1" = "dodgerblue2", "IBD2" = "firebrick2"), drop = FALSE) + 
       facet_grid(Chr ~ .) + scale_x_continuous(expand  = c(0, 0), limits = c(0, NA)) + 
-      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments between ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
+      labs(x = "Position (Mb)", y = "", title=substitute(paste("IBD Segments for Relative Pair ", ID1," and ", ID2, " (", pi[1], "=", PropIBD1, ";", pi[2], "=", PropIBD2, ")"),
                                                          list(ID1 = target.data$ID1, ID2 = target.data$ID2, PropIBD1 = Prop.IBD1, PropIBD2 = Prop.IBD2))) + 
       theme(
         legend.position = "bottom", legend.key = element_rect(color = "black"),
@@ -610,6 +618,9 @@ server <- function(input, output, session) {
       )
     print(g)
     
+    output$dt2 <- renderDataTable({
+      target.data
+    })
     
   })
   
