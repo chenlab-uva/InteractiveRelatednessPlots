@@ -75,7 +75,7 @@ After selecting the *.seg file from KING, we will see the shared IBD information
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_1.png" width="854" height="480">
 
-We can see the detailed IBD sharing by clicking the dot from the interactive display of IBD relatedness plot.
+We can see the detailed IBD sharing by clicking a dot from the interactive display of IBD relatedness plot.
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewIBD/viewIBD_2.png" width="854" height="480">
 
