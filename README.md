@@ -110,12 +110,11 @@ We can explore the detailed IBD sharing by clicking the lines on the interactive
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_2.png" width="854" height="480">
 
-Also, we can explore the family relatedness under a particular family size. And then choose a family of that family size.
+Also, we can explore the family relatedness under a particular family size. And then choose a family of that family size. Detailed IBD sharing will be displayed under these two plots by clicking the lines on the interactive inferred relatedness plot.
+
 
 <img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewfamily_3.png" width="854" height="480">
 
-Detailed IBD sharing will be displayed under these two plots by clicking the lines on the interactive inferred relatedness plot.
 
-<img src="https://github.com/chenlab-uva/InteractiveRelatednessPlots/blob/main/viewFamily/viewFamily_4.png" width="854" height="480">
 
 
