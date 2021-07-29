@@ -18,7 +18,7 @@ unzip HapMap.zip
 
 Related KING output files are saved at HapMap folder.
 
-## R packages required for these shiny apps.
+## Required R packages for these shiny apps.
 | Name  | Required R packages |
 | ------------- | ------------- |
 | viewROH  | 'shiny', 'ggplot2'  |
@@ -28,7 +28,7 @@ Related KING output files are saved at HapMap folder.
 
 ## Interactive plots for ROH
 
-Run KING to get the required three files. They are *.roh, *.rohseg.gz and *allsegs.txt
+Run KING to get required files. They are *.roh, *.rohseg.gz and *allsegs.txt
 
 ```{bash}
 king -b hapmap.bed --roh --prefix hapmap
